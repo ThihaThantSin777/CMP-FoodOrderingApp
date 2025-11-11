@@ -1,49 +1,133 @@
 package org.thiha.thant.sin.foa
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
+import androidx.compose.runtime.Composable
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import foodorderingapp.composeapp.generated.resources.Res
-import foodorderingapp.composeapp.generated.resources.compose_multiplatform
+import org.thiha.thant.sin.foa.auth.forget_password.ui.ForgetPasswordScreen
+import org.thiha.thant.sin.foa.auth.login.ui.LoginScreen
+import org.thiha.thant.sin.foa.auth.reset_password.ui.ResetPasswordScreen
+import org.thiha.thant.sin.foa.auth.sign_up.ui.SignupScreen
+import org.thiha.thant.sin.foa.home.cart.ui.CartScreen
+import org.thiha.thant.sin.foa.home.order_confirm.ui.OrderConfirmScreen
+import org.thiha.thant.sin.foa.home.restaurant_details.ui.RestaurantDetailsScreen
+import org.thiha.thant.sin.foa.home.review_order.ui.ReviewOrderScreen
+import org.thiha.thant.sin.foa.home.ui.HomeScreen
+import org.thiha.thant.sin.foa.order.ui.OrderScreen
+import org.thiha.thant.sin.foa.profile.about.ui.AboutScreen
+import org.thiha.thant.sin.foa.profile.ui.ProfileScreen
 
 @Composable
 @Preview
 fun App() {
+
+    val navigationController = rememberNavController()
+
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        NavHost(
+            navigationController,
+            startDestination = NavRoutes.LoginScreen,
         ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
+            composable<NavRoutes.LoginScreen>() {
+                LoginScreen()
             }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
+            composable<NavRoutes.SignupScreen>() {
+                SignupScreen()
+            }
+
+            composable<NavRoutes.ForgetPasswordScreen>() {
+                ForgetPasswordScreen()
+            }
+            composable<NavRoutes.ResetPasswordScreen>() {
+                ResetPasswordScreen()
+            }
+
+            composable<NavRoutes.HomeScreen>() {
+                HomeScreen()
+            }
+
+            composable<NavRoutes.RestaurantDetailsScreen>() { backStackEntry ->
+                val args = backStackEntry.toRoute<NavRoutes.RestaurantDetailsScreen>()
+                val restaurantID = args.restaurantID;
+                RestaurantDetailsScreen(
+                    restaurantId = restaurantID
+                )
+            }
+
+            composable<NavRoutes.CartScreen>() {
+                CartScreen()
+            }
+
+            composable<NavRoutes.ReviewOrderScreen>() {
+                ReviewOrderScreen()
+            }
+
+            composable<NavRoutes.OrderConfirmScreen>() {
+                OrderConfirmScreen()
+            }
+
+            composable<NavRoutes.OrderScreen>() {
+                OrderScreen()
+            }
+
+            composable<NavRoutes.ProfileScreen>() {
+                ProfileScreen()
+            }
+
+            composable<NavRoutes.AboutScreen>() {
+                AboutScreen()
             }
         }
     }
+}
+
+@Serializable
+sealed class NavRoutes {
+
+
+    //Auth
+    @Serializable
+    object LoginScreen
+
+    @Serializable
+    object SignupScreen
+
+    @Serializable
+    object ForgetPasswordScreen
+
+    @Serializable
+    object ResetPasswordScreen
+
+
+    //Home
+    @Serializable
+    object HomeScreen
+
+    @Serializable
+    data class RestaurantDetailsScreen(val restaurantID: Int)
+
+    @Serializable
+    object CartScreen
+
+    @Serializable
+    object ReviewOrderScreen
+
+    @Serializable
+    object OrderConfirmScreen
+
+
+    //Order
+    @Serializable
+    object OrderScreen
+
+    //Profile
+    @Serializable
+    object ProfileScreen
+
+    @Serializable
+    object AboutScreen
 }
