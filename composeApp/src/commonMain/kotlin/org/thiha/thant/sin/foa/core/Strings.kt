@@ -32,6 +32,8 @@ const val RESET_PASSWORD_TITLE_TEXT="Please enter your new password.";
 
 const val RESET_PASSWORD_TEXT="Reset Password";
 
+const val ORDER_TITLE="Orders";
+
 //Error Message Strings
 const val ENTER_EMAIL_TEXT = "Please enter your email.";
 
@@ -50,3 +52,9 @@ const val NAME_TOO_SHORT_TEXT = "Name must be at least 2 characters."
 const val ENTER_CONFIRM_PASSWORD_TEXT = "Please enter your confirm password.";
 
 const val PASSWORD_NOT_MATCH_TEXT = "Passwords do not match.";
+
+
+//Route
+const val HOME_ROUTE="Home";
+const val ORDER_ROUTE="Order";
+const val PROFILE_ROUTE="Profile";

@@ -37,7 +37,7 @@ fun App() {
     MaterialTheme {
         NavHost(
             navigationController,
-            startDestination = NavRoutes.LoginScreen,
+            startDestination = NavRoutes.MainScreen,
             modifier = Modifier.clickable(
                 interactionSource = interactionSource, indication = null
             ) {
@@ -49,7 +49,13 @@ fun App() {
 
                 }, onTapSignUp = {
                     navigationController.navigate(NavRoutes.SignupScreen)
-                }, onTapLogin = {})
+                }, onTapLogin = {
+                    navigationController.navigate(NavRoutes.MainScreen) {
+                        popUpTo(navigationController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
+                })
             }
             composable<NavRoutes.SignupScreen>() {
                 SignupScreen(onTapBack = {
@@ -69,6 +75,11 @@ fun App() {
                     navigationController.navigateUp()
                 }, onTapResetPassword = {})
             }
+
+            composable<NavRoutes.MainScreen>() {
+                MainScreen()
+            }
+
 
             composable<NavRoutes.HomeScreen>() {
                 HomeScreen()
@@ -126,6 +137,9 @@ sealed class NavRoutes {
     @Serializable
     object ResetPasswordScreen
 
+    //Main
+    @Serializable
+    object MainScreen
 
     //Home
     @Serializable
