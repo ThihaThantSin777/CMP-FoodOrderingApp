@@ -10,10 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import org.thiha.thant.sin.foa.core.DEFAULT_BUTTON_HEIGHT
 import org.thiha.thant.sin.foa.core.MARGIN_CARD_MEDIUM_2
 import org.thiha.thant.sin.foa.core.PRIMARY_COLOR
+import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
 import org.thiha.thant.sin.foa.core.TEXT_REGULAR_2X
 
 @Composable
@@ -26,7 +29,8 @@ fun AppPrimaryButton(
     shape: Shape = RoundedCornerShape(MARGIN_CARD_MEDIUM_2),
     containerColor: Color = PRIMARY_COLOR,
     contentColor: Color = Color.White,
-    textStyle: TextStyle = TextStyle(fontSize = TEXT_REGULAR_2X)
+    textFontSize: TextUnit = TEXT_REGULAR_2X,
+    textColor: Color = Color.White
 ) {
     Button(
         onClick = onClick,
@@ -38,6 +42,10 @@ fun AppPrimaryButton(
         ),
         shape = shape
     ) {
-        Text(text, color = contentColor, style = textStyle)
+        Text(
+            text,
+            fontSize = textFontSize,
+            color = textColor,
+        )
     }
 }

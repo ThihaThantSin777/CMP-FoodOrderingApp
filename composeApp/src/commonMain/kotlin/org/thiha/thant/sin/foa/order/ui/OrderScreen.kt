@@ -28,6 +28,7 @@ import coil3.compose.SubcomposeAsyncImage
 import foodorderingapp.composeapp.generated.resources.Res
 import foodorderingapp.composeapp.generated.resources.chevron_right_icon
 import org.jetbrains.compose.resources.painterResource
+import org.thiha.thant.sin.foa.components.AppNetworkImage
 import org.thiha.thant.sin.foa.core.DEFAULT_ORDER_CHEVRON_RIGHT_ICON_SIZE
 import org.thiha.thant.sin.foa.core.DEFAULT_ORDER_IMAGE_LOADING_SIZE
 import org.thiha.thant.sin.foa.core.DEFAULT_ORDER_IMAGE_SIZE
@@ -60,21 +61,10 @@ fun OrderScreen() {
 @Composable
 fun OrderItem() {
     Row {
-        SubcomposeAsyncImage(
-            modifier = Modifier.size(DEFAULT_ORDER_IMAGE_SIZE).clip(CircleShape),
-            model = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
-            loading = {
-                CircularProgressIndicator(
-                    modifier = Modifier.requiredSize(
-                        DEFAULT_ORDER_IMAGE_LOADING_SIZE
-                    )
-                )
-            },
-            error = {
-                Icon(Icons.Default.Info, contentDescription = null)
-            },
-            contentDescription = null,
-            contentScale = ContentScale.Crop
+        AppNetworkImage(
+            "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
+            shape = CircleShape,
+            size = DEFAULT_ORDER_IMAGE_SIZE,
         )
         Spacer(modifier = Modifier.width(MARGIN_CARD_MEDIUM_2))
         Column {

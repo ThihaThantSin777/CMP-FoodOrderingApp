@@ -77,13 +77,20 @@ fun App() {
             }
 
             composable<NavRoutes.MainScreen>() {
-                MainScreen()
+                MainScreen(
+                    onTapAboutScreen = {
+                        navigationController.navigate(NavRoutes.AboutScreen)
+                    },
+                    onTapLogout = {
+                        navigationController.navigate(NavRoutes.LoginScreen) {
+                            popUpTo(navigationController.graph.startDestinationId) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                )
             }
 
-
-            composable<NavRoutes.HomeScreen>() {
-                HomeScreen()
-            }
 
             composable<NavRoutes.RestaurantDetailsScreen>() { backStackEntry ->
                 val args = backStackEntry.toRoute<NavRoutes.RestaurantDetailsScreen>()
@@ -105,16 +112,13 @@ fun App() {
                 OrderConfirmScreen()
             }
 
-            composable<NavRoutes.OrderScreen>() {
-                OrderScreen()
-            }
-
-            composable<NavRoutes.ProfileScreen>() {
-                ProfileScreen()
-            }
 
             composable<NavRoutes.AboutScreen>() {
-                AboutScreen()
+                AboutScreen(
+                    onBack = {
+                        navigationController.navigateUp()
+                    }
+                )
             }
         }
     }
@@ -141,9 +145,6 @@ sealed class NavRoutes {
     @Serializable
     object MainScreen
 
-    //Home
-    @Serializable
-    object HomeScreen
 
     @Serializable
     data class RestaurantDetailsScreen(val restaurantID: Int)
@@ -156,15 +157,6 @@ sealed class NavRoutes {
 
     @Serializable
     object OrderConfirmScreen
-
-
-    //Order
-    @Serializable
-    object OrderScreen
-
-    //Profile
-    @Serializable
-    object ProfileScreen
 
     @Serializable
     object AboutScreen

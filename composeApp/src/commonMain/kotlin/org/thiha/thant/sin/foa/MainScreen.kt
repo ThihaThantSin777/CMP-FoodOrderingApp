@@ -33,7 +33,11 @@ import org.thiha.thant.sin.foa.order.ui.OrderScreen
 import org.thiha.thant.sin.foa.profile.ui.ProfileScreen
 
 @Composable
-fun MainScreen(desireRoute: String = ORDER_ROUTE) {
+fun MainScreen(
+    desireRoute: String = PROFILE_ROUTE,
+    onTapAboutScreen: () -> Unit,
+    onTapLogout: () -> Unit
+) {
     var selectedItem by remember {
         mutableStateOf(desireRoute)
     }
@@ -51,7 +55,7 @@ fun MainScreen(desireRoute: String = ORDER_ROUTE) {
             selectedImage = Res.drawable.profile_select_icon,
         ),
     );
-    Scaffold(containerColor = Color.White,bottomBar = {
+    Scaffold(containerColor = Color.White, bottomBar = {
         Column {
             HorizontalDivider()
             NavigationBar(containerColor = Color.White) {
@@ -97,7 +101,10 @@ fun MainScreen(desireRoute: String = ORDER_ROUTE) {
             }
 
             PROFILE_ROUTE -> {
-                ProfileScreen()
+                ProfileScreen(
+                    onTapAboutScreen,
+                    onTapLogout,
+                )
             }
 
             else -> {

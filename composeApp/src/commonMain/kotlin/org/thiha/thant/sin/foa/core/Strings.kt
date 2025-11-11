@@ -34,6 +34,21 @@ const val RESET_PASSWORD_TEXT="Reset Password";
 
 const val ORDER_TITLE="Orders";
 
+const val EDIT_PROFILE_TITLE="Edit Profile";
+
+const val CHANGE_PASSWORD_TITLE="Change Password";
+
+const val PAYMENT_METHODS_TITLE="Payment Methods";
+
+const val NOTIFICATION_TITLE="Notifications";
+
+const val SETTINGS_TITLE="Settings";
+
+const val ABOUT_TITLE="About";
+
+const val LOGOUT_TITLE="Logout";
+
+
 //Error Message Strings
 const val ENTER_EMAIL_TEXT = "Please enter your email.";
 
