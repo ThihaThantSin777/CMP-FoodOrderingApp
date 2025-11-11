@@ -48,8 +48,7 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.okhttp)
 
-            implementation(libs.androidx.material.icons.core)
-
+            implementation(libs.jetbrains.material.icons.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

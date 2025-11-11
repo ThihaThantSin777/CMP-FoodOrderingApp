@@ -1,7 +1,12 @@
 package org.thiha.thant.sin.foa
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,24 +31,43 @@ import org.thiha.thant.sin.foa.profile.ui.ProfileScreen
 fun App() {
 
     val navigationController = rememberNavController()
+    val focusManager = LocalFocusManager.current;
+    val interactionSource = remember { MutableInteractionSource() }
 
     MaterialTheme {
         NavHost(
             navigationController,
             startDestination = NavRoutes.LoginScreen,
-        ) {
+            modifier = Modifier.clickable(
+                interactionSource = interactionSource, indication = null
+            ) {
+                focusManager.clearFocus()
+            }) {
             composable<NavRoutes.LoginScreen>() {
-                LoginScreen()
+                LoginScreen(onTapForgetPassword = {
+                    navigationController.navigate(NavRoutes.ForgetPasswordScreen)
+
+                }, onTapSignUp = {
+                    navigationController.navigate(NavRoutes.SignupScreen)
+                }, onTapLogin = {})
             }
             composable<NavRoutes.SignupScreen>() {
-                SignupScreen()
+                SignupScreen(onTapBack = {
+                    navigationController.navigateUp()
+                }, onTapCreateAccount = {})
             }
 
             composable<NavRoutes.ForgetPasswordScreen>() {
-                ForgetPasswordScreen()
+                ForgetPasswordScreen(onTapBack = {
+                    navigationController.navigateUp()
+                }, onTapContinue = {
+                    navigationController.navigate(NavRoutes.ResetPasswordScreen)
+                })
             }
             composable<NavRoutes.ResetPasswordScreen>() {
-                ResetPasswordScreen()
+                ResetPasswordScreen(onTapBack = {
+                    navigationController.navigateUp()
+                }, onTapResetPassword = {})
             }
 
             composable<NavRoutes.HomeScreen>() {
