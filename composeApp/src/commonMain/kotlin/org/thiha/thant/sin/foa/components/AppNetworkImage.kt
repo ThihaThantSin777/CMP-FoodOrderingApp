@@ -24,17 +24,16 @@ import org.thiha.thant.sin.foa.core.MARGIN_SMALL
 fun AppNetworkImage(
     imageUrl: String,
     modifier: Modifier = Modifier,
-    size: Dp,
     shape: Shape = RoundedCornerShape(MARGIN_SMALL),
     borderWidth: Dp = 0.dp,
     borderColor: Color = Color.Transparent,
     contentScale: ContentScale = ContentScale.Crop,
 ) {
     Box(
-        modifier = modifier.size(size).clip(shape).border(borderWidth, borderColor, shape),
         contentAlignment = Alignment.Center
     ) {
         SubcomposeAsyncImage(
+            modifier = modifier.clip(shape).border(borderWidth, borderColor, shape),
             model = imageUrl,
             contentDescription = null,
             contentScale = contentScale,

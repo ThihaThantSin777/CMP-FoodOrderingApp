@@ -2,7 +2,206 @@ package org.thiha.thant.sin.foa.home.review_order.ui
 
 import androidx.compose.runtime.Composable
 
-@Composable
-fun ReviewOrderScreen() {
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import foodorderingapp.composeapp.generated.resources.Res
+import foodorderingapp.composeapp.generated.resources.credit_card_image
+import org.jetbrains.compose.resources.painterResource
+import org.thiha.thant.sin.foa.components.AppNetworkImage
+import org.thiha.thant.sin.foa.components.AppPrimaryButton
+import org.thiha.thant.sin.foa.core.*
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReviewOrderScreen(
+    onBack: () -> Unit = {},
+    onConfirmOrder: () -> Unit = {}
+) {
+    val orderItems = listOf(
+        ReviewItemVM(
+            id = 1,
+            title = "Spicy Chicken Sandwich",
+            quantity = 1,
+            price = 12.99,
+            image = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg"
+        ),
+        ReviewItemVM(
+            id = 2,
+            title = "Fries",
+            quantity = 1,
+            price = 3.99,
+            image = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg"
+        )
+    )
+
+    val addressTitle = "Home"
+    val addressDetails = "123 Elm Street, Apt 4B"
+    val paymentType = "Credit Card"
+    val maskedCard = "7899 9787 8778"
+    val total = orderItems.sumOf { it.price * it.quantity }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(REVIEW_ORDER_TITLE) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = MARGIN_MEDIUM_3, vertical = MARGIN_MEDIUM_2)
+            ) {
+                AppPrimaryButton(
+                    text = CONFIRM_ORDER_TITLE,
+                    onClick = onConfirmOrder,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(DEFAULT_BUTTON_HEIGHT)
+                )
+            }
+        }
+    ) { inner ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(inner)
+                .padding(horizontal = MARGIN_MEDIUM_3)
+        ) {
+            Spacer(Modifier.height(MARGIN_MEDIUM_3))
+
+            Text(
+                ORDER_SUMMARY_TITLE,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = MARGIN_MEDIUM)
+            )
+
+            orderItems.forEach { item ->
+                ReviewOrderRow(item)
+            }
+
+            Spacer(Modifier.height(MARGIN_MEDIUM_3))
+
+            // ---------- Delivery Address ----------
+            Text(
+                DELIVERY_ADDRESS_TITLE,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = TEXT_REGULAR_3X,
+                modifier = Modifier.padding(bottom = MARGIN_MEDIUM)
+            )
+            Spacer(Modifier.height(MARGIN_MEDIUM_3))
+            Column {
+                Text(addressTitle, fontWeight = FontWeight.Medium)
+                Spacer(Modifier.height(MARGIN_SMALL))
+                Text(addressDetails, color = SECONDARY_COLOR)
+            }
+
+            Spacer(Modifier.height(MARGIN_MEDIUM_3))
+
+            Text(
+                PAYMENT_METHOD_TITLE,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = TEXT_REGULAR_3X,
+                modifier = Modifier.padding(bottom = MARGIN_MEDIUM)
+            )
+            Spacer(Modifier.height(MARGIN_MEDIUM_3))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.credit_card_image),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(CREDIT_CARD_IMAGE_SIZE)
+                        .padding(end = MARGIN_MEDIUM)
+                )
+
+                Column {
+                    Text(paymentType, fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(MARGIN_SMALL))
+                    Text(maskedCard, color = SECONDARY_COLOR)
+                }
+            }
+
+            Spacer(Modifier.height(MARGIN_MEDIUM_3))
+
+            // ---------- Order Total ----------
+            Text(
+                ORDER_TITLE_TEXT,
+                fontSize = TEXT_REGULAR_3X,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = MARGIN_MEDIUM)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        end = MARGIN_MEDIUM_2,
+                        bottom = MARGIN_MEDIUM_3
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(TOTAL_TITLE_TEXT, color = SECONDARY_COLOR)
+                Text(
+                    "$$total",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(Modifier.height(MARGIN_MEDIUM_2))
+        }
+    }
 }
+
+@Composable
+fun ReviewOrderRow(item: ReviewItemVM) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = MARGIN_MEDIUM),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AppNetworkImage(
+            imageUrl = item.image,
+            modifier = Modifier
+                .size(REVIEW_ORDER_IMAGE_SIZE),
+            shape = RoundedCornerShape(MARGIN_CARD_MEDIUM_2)
+        )
+
+        Spacer(Modifier.width(MARGIN_MEDIUM_2))
+
+        Column(Modifier.weight(1f)) {
+            Text(item.title, fontWeight = FontWeight.Medium)
+            Spacer(Modifier.height(MARGIN_SMALL))
+            Text("${item.quantity}×", color = SECONDARY_COLOR)
+        }
+
+        Text(
+            "$${item.price}",
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+
+data class ReviewItemVM(
+    val id: Int,
+    val title: String,
+    val quantity: Int,
+    val price: Double,
+    val image: String
+)

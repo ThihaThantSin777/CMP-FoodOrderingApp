@@ -7,30 +7,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import coil3.compose.SubcomposeAsyncImage
 import foodorderingapp.composeapp.generated.resources.Res
 import foodorderingapp.composeapp.generated.resources.chevron_right_icon
 import org.jetbrains.compose.resources.painterResource
 import org.thiha.thant.sin.foa.components.AppNetworkImage
 import org.thiha.thant.sin.foa.core.DEFAULT_ORDER_CHEVRON_RIGHT_ICON_SIZE
-import org.thiha.thant.sin.foa.core.DEFAULT_ORDER_IMAGE_LOADING_SIZE
 import org.thiha.thant.sin.foa.core.DEFAULT_ORDER_IMAGE_SIZE
 import org.thiha.thant.sin.foa.core.MARGIN_CARD_MEDIUM_2
 import org.thiha.thant.sin.foa.core.MARGIN_MEDIUM_3
@@ -62,9 +53,9 @@ fun OrderScreen() {
 fun OrderItem() {
     Row {
         AppNetworkImage(
-            "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
+            modifier = Modifier.size(DEFAULT_ORDER_IMAGE_SIZE),
+            imageUrl = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg",
             shape = CircleShape,
-            size = DEFAULT_ORDER_IMAGE_SIZE,
         )
         Spacer(modifier = Modifier.width(MARGIN_CARD_MEDIUM_2))
         Column {

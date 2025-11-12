@@ -18,13 +18,12 @@ import org.thiha.thant.sin.foa.auth.login.ui.LoginScreen
 import org.thiha.thant.sin.foa.auth.reset_password.ui.ResetPasswordScreen
 import org.thiha.thant.sin.foa.auth.sign_up.ui.SignupScreen
 import org.thiha.thant.sin.foa.home.cart.ui.CartScreen
+import org.thiha.thant.sin.foa.home.checkout.ui.CheckoutScreen
 import org.thiha.thant.sin.foa.home.order_confirm.ui.OrderConfirmScreen
 import org.thiha.thant.sin.foa.home.restaurant_details.ui.RestaurantDetailsScreen
 import org.thiha.thant.sin.foa.home.review_order.ui.ReviewOrderScreen
-import org.thiha.thant.sin.foa.home.ui.HomeScreen
-import org.thiha.thant.sin.foa.order.ui.OrderScreen
+
 import org.thiha.thant.sin.foa.profile.about.ui.AboutScreen
-import org.thiha.thant.sin.foa.profile.ui.ProfileScreen
 
 @Composable
 @Preview
@@ -37,7 +36,7 @@ fun App() {
     MaterialTheme {
         NavHost(
             navigationController,
-            startDestination = NavRoutes.MainScreen,
+            startDestination = NavRoutes.ReviewOrderScreen,
             modifier = Modifier.clickable(
                 interactionSource = interactionSource, indication = null
             ) {
@@ -87,6 +86,12 @@ fun App() {
                                 inclusive = true
                             }
                         }
+                    },
+                    onTapCart = {
+                        navigationController.navigate(NavRoutes.CartScreen)
+                    },
+                    onTapRestaurant = {
+                        navigationController.navigate(NavRoutes.RestaurantDetailsScreen(1))
                     }
                 )
             }
@@ -96,20 +101,65 @@ fun App() {
                 val args = backStackEntry.toRoute<NavRoutes.RestaurantDetailsScreen>()
                 val restaurantID = args.restaurantID;
                 RestaurantDetailsScreen(
-                    restaurantId = restaurantID
+                    restaurantId = restaurantID,
+                    onTapViewMyCart = {
+                        navigationController.navigate(NavRoutes.CartScreen)
+
+                    },
+                    onTapBack = {
+                        navigationController.navigateUp()
+
+                    }
                 )
             }
 
             composable<NavRoutes.CartScreen>() {
-                CartScreen()
+                CartScreen(
+                    onBack = {
+                        navigationController.navigateUp()
+                    },
+                    onPlaceOrder = {
+                        navigationController.navigate(NavRoutes.CheckOutScreen)
+                    },
+                )
+            }
+
+
+            composable<NavRoutes.CheckOutScreen>() {
+                CheckoutScreen(
+                    onPlaceOrder = {
+                        navigationController.navigate(NavRoutes.ReviewOrderScreen)
+                    },
+                    onBack = {
+                        navigationController.navigateUp()
+                    },
+                )
             }
 
             composable<NavRoutes.ReviewOrderScreen>() {
-                ReviewOrderScreen()
+                ReviewOrderScreen(
+                    onBack = {
+                        navigationController.navigateUp()
+                    },
+                    onConfirmOrder = {
+                        navigationController.navigate(NavRoutes.OrderConfirmScreen)
+                    }
+                )
             }
 
             composable<NavRoutes.OrderConfirmScreen>() {
-                OrderConfirmScreen()
+                OrderConfirmScreen(
+                    onBack = {
+                        navigationController.navigateUp()
+                    },
+                    onConfirm = {
+                        navigationController.navigate(NavRoutes.MainScreen) {
+                            popUpTo(navigationController.graph.startDestinationId) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                )
             }
 
 
@@ -151,6 +201,9 @@ sealed class NavRoutes {
 
     @Serializable
     object CartScreen
+
+    @Serializable
+    object CheckOutScreen
 
     @Serializable
     object ReviewOrderScreen
