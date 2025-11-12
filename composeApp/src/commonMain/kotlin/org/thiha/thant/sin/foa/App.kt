@@ -36,7 +36,7 @@ fun App() {
     MaterialTheme {
         NavHost(
             navigationController,
-            startDestination = NavRoutes.ReviewOrderScreen,
+            startDestination = NavRoutes.LoginScreen,
             modifier = Modifier.clickable(
                 interactionSource = interactionSource, indication = null
             ) {
