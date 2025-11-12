@@ -1,0 +1,62 @@
+package org.thiha.thant.sin.foa.core
+
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+// Dimens
+val MARGIN_XSMALL = 2.dp;
+val MARGIN_SMALL = 4.dp;
+val MARGIN_MEDIUM = 8.dp;
+val MARGIN_CARD_MEDIUM_2 = 12.dp;
+val MARGIN_MEDIUM_2 = 16.dp;
+val MARGIN_MEDIUM_3 = 20.dp;
+val MARGIN_LARGE = 24.dp;
+val MARGIN_XLARGE = 32.dp;
+val MARGIN_40 = 40.dp;
+val MARGIN_XXLARGE = 48.dp;
+
+//App Specific
+val DEFAULT_BUTTON_HEIGHT = 50.0.dp;
+val DEFAULT_BOTTOM_NAV_BAR_SIZE = 22.dp;
+
+val DEFAULT_ORDER_IMAGE_SIZE = 70.dp;
+
+val DEFAULT_ORDER_CHEVRON_RIGHT_ICON_SIZE = 14.dp;
+
+val DEFAULT_ORDER_IMAGE_LOADING_SIZE = 40.dp;
+
+val DEFAULT_RESTAURANT_IMAGE_HEIGHT = 200.dp;
+
+val HOME_PAGE_ORDER_BUTTON_WIDTH = 100.dp;
+
+val HOME_PAGE_ORDER_BUTTON_HEIGHT = 35.dp;
+val ADD_BUTTON_CONTAINER_SIZE = 34.dp;
+
+val ADD_BUTTON_SIZE = 18.dp;
+
+val MENU_IMAGE_WIDTH = 120.dp;
+
+val MENU_IMAGE_HEIGHT= 100.dp;
+
+val BOTTOM_TOOL_BAR_WIDTH = 50.dp;
+
+val BOTTOM_TOOL_BAR_HEIGHT= 3.dp;
+
+val CART_IMAGE_SIZE= 52.dp;
+
+val CHECK_OUT_TEXT_AREA_HEIGHT=140.dp;
+
+val REVIEW_ORDER_IMAGE_SIZE=60.dp;
+val CREDIT_CARD_IMAGE_SIZE=36.dp;
+
+
+
+// Text
+val TEXT_SMALL_2X = 10.sp;
+val TEXT_SMALL = 12.sp;
+val TEXT_REGULAR = 14.sp;
+val TEXT_REGULAR_2X = 16.sp;
+val TEXT_REGULAR_3X = 20.sp;
+val TEXT_LARGE = 24.sp;
+val TEXT_LARGE_3x = 28.sp;
+val TEXT_BIG = 32.sp;
