@@ -1,4 +1,4 @@
-package org.thiha.thant.sin.foa.profile.about.ui
+package org.thiha.thant.sin.foa.profile.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

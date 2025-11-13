@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -13,17 +14,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.thiha.thant.sin.foa.auth.forget_password.ui.ForgetPasswordScreen
-import org.thiha.thant.sin.foa.auth.login.ui.LoginScreen
-import org.thiha.thant.sin.foa.auth.reset_password.ui.ResetPasswordScreen
-import org.thiha.thant.sin.foa.auth.sign_up.ui.SignupScreen
-import org.thiha.thant.sin.foa.home.cart.ui.CartScreen
-import org.thiha.thant.sin.foa.home.checkout.ui.CheckoutScreen
-import org.thiha.thant.sin.foa.home.order_confirm.ui.OrderConfirmScreen
-import org.thiha.thant.sin.foa.home.restaurant_details.ui.RestaurantDetailsScreen
-import org.thiha.thant.sin.foa.home.review_order.ui.ReviewOrderScreen
+import org.thiha.thant.sin.foa.auth.data.LoginRepository
+import org.thiha.thant.sin.foa.auth.ui.ForgetPasswordScreen
+import org.thiha.thant.sin.foa.auth.data.vos.LoginRequestVO
+import org.thiha.thant.sin.foa.auth.ui.LoginScreen
+import org.thiha.thant.sin.foa.auth.ui.ResetPasswordScreen
+import org.thiha.thant.sin.foa.auth.ui.SignupScreen
+import org.thiha.thant.sin.foa.home.ui.CartScreen
+import org.thiha.thant.sin.foa.home.ui.CheckoutScreen
+import org.thiha.thant.sin.foa.home.ui.OrderConfirmScreen
+import org.thiha.thant.sin.foa.home.ui.RestaurantDetailsScreen
+import org.thiha.thant.sin.foa.home.ui.ReviewOrderScreen
 
-import org.thiha.thant.sin.foa.profile.about.ui.AboutScreen
+import org.thiha.thant.sin.foa.profile.ui.AboutScreen
 
 @Composable
 @Preview
@@ -32,6 +35,15 @@ fun App() {
     val navigationController = rememberNavController()
     val focusManager = LocalFocusManager.current;
     val interactionSource = remember { MutableInteractionSource() }
+
+    LaunchedEffect(Unit) {
+       try {
+           val loginVO = LoginRepository.login(LoginRequestVO("thantsin7755@gmail.com", "Thantsin7755"))
+           println("Login Data: $loginVO")
+       }catch (e : Exception){
+           println("Login Exception: $e")
+       }
+    }
 
     MaterialTheme {
         NavHost(

@@ -1,7 +1,6 @@
-package org.thiha.thant.sin.foa.home.order_confirm.ui
+package org.thiha.thant.sin.foa.home.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons

@@ -1,4 +1,4 @@
-package org.thiha.thant.sin.foa.home.restaurant_details.ui
+package org.thiha.thant.sin.foa.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

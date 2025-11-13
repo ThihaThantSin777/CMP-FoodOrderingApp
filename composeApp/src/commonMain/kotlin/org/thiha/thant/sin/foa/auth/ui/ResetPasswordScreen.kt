@@ -1,4 +1,4 @@
-package org.thiha.thant.sin.foa.auth.reset_password.ui
+package org.thiha.thant.sin.foa.auth.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
