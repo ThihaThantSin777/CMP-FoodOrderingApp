@@ -96,9 +96,18 @@ const val RETRY_TEXT = "Retry";
 
 const val OK_TEXT = "OK"
 
-const val LOADING_TEXT = "Loading..."
+const val CONFIRM_TEXT = "Confirm"
 
-const val RESET_PASSWORD_SUCCESS = "Password is successfully reset."
+const val LOADING_TEXT = "Loading..."
+const val ADD_NEW_INFORMATION = "Add new information"
+
+const val CHECK_OUT_INFORMATION_TEXT = "Checkout Information"
+
+const val CHECK_OUT_INFORMATION_DESCRIPTION_TEXT = "Select your delivery and payment details"
+
+
+
+
 
 
 //Error Message Strings
@@ -142,11 +151,30 @@ const val ENTER_ADDRESS_TEXT = "Please enter address.";
 
 const val LOGIN_ERROR_TITLE = "Login Fail";
 
+const val NEW_INFORMATION_CREATE_FAIL_TITLE = "Information Create Fail";
+
+const val SUBMIT_ORDER_FAIL_TITLE = "Submit Order Fail";
+
+const val ORDER_CONFIRMED_TEXT="Order Confirmed"
+
+const val ORDER_CONFIRMED_DESC="Your order is confirmed!"
+
+const val ORDER_CONFIRMED_SUB_DESC="Your order will be delivered in 30–45 minutes.\nYou can track your order in the Orders tab.";
+
+const val DELIVERY_ADDRESS_AND_PAYMENT_METHOD_ERROR_TITLE =
+    "Fail to Fetch Delivery Address and Payment Method";
+
 const val SIGNUP_ERROR_TITLE = "Signup Fail";
 
 const val CHECK_EMAIL_ERROR_TITLE = "Email not Register";
 
 const val RESET_PASSWORD_ERROR_TITLE = "Reset Password Fail";
+
+const val RESTAURANT_NOT_FOUNT_TEXT = "Restaurant not found"
+
+const val PAYMENT_METHOD_NO_SAVE_TEXT = "No saved payment methods.";
+
+const val DELIVERY_ADDRESS_NO_SAVE_TEXT = "No saved delivery addresses.";
 
 
 //Route

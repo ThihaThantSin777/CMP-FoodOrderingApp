@@ -114,7 +114,7 @@ fun HomeScreen(
 
                             RestaurantsNearYouCard(
                                 restaurant = restaurantList[index],
-                                modifier = Modifier.clickable { onTapRestaurant() }
+                                onTapRestaurant = onTapRestaurant,
                             )
 
                             val isLastItem = index == restaurantList.lastIndex
@@ -138,9 +138,9 @@ fun HomeScreen(
 
 
 @Composable
-fun RestaurantsNearYouCard(modifier: Modifier, restaurant: RestaurantVO) {
+fun RestaurantsNearYouCard(restaurant: RestaurantVO, onTapRestaurant: () -> Unit) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .padding(horizontal = MARGIN_CARD_MEDIUM_2),
     ) {
         AppNetworkImage(
@@ -183,7 +183,9 @@ fun RestaurantsNearYouCard(modifier: Modifier, restaurant: RestaurantVO) {
                     HOME_PAGE_ORDER_BUTTON_HEIGHT
                 ),
                 text = ORDER_BUTTON_TEXT,
-                onClick = {}
+                onClick = {
+                    onTapRestaurant()
+                }
             )
         }
     }

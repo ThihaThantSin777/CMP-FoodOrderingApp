@@ -24,13 +24,21 @@ import org.thiha.thant.sin.foa.auth.viewmodel.ForgetPasswordViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.LoginViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.ResetPasswordViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.SignupViewModel
+import org.thiha.thant.sin.foa.home.ui.CartRoute
 import org.thiha.thant.sin.foa.home.ui.CartScreen
+import org.thiha.thant.sin.foa.home.ui.CheckoutRoute
 import org.thiha.thant.sin.foa.home.ui.CheckoutScreen
 import org.thiha.thant.sin.foa.home.ui.MainRoute
 import org.thiha.thant.sin.foa.home.ui.OrderConfirmScreen
+import org.thiha.thant.sin.foa.home.ui.RestaurantDetailsRoute
 import org.thiha.thant.sin.foa.home.ui.RestaurantDetailsScreen
+import org.thiha.thant.sin.foa.home.ui.ReviewOrderRoute
 import org.thiha.thant.sin.foa.home.ui.ReviewOrderScreen
+import org.thiha.thant.sin.foa.home.viewmodel.CartViewModel
+import org.thiha.thant.sin.foa.home.viewmodel.CheckOutViewModel
 import org.thiha.thant.sin.foa.home.viewmodel.HomeViewModel
+import org.thiha.thant.sin.foa.home.viewmodel.RestaurantDetailsViewModel
+import org.thiha.thant.sin.foa.home.viewmodel.ReviewOrderViewModel
 import org.thiha.thant.sin.foa.order.viewmodel.OrderHistoryViewModel
 import org.thiha.thant.sin.foa.profile.ui.AboutScreen
 
@@ -162,8 +170,12 @@ fun App() {
             composable<NavRoutes.RestaurantDetailsScreen>() { backStackEntry ->
                 val args = backStackEntry.toRoute<NavRoutes.RestaurantDetailsScreen>()
                 val restaurantID = args.restaurantID;
-                RestaurantDetailsScreen(
-                    restaurantId = restaurantID,
+                val restaurantDetailsViewModel = viewModel {
+                    RestaurantDetailsViewModel(restaurantID)
+                }
+
+                RestaurantDetailsRoute(
+                    viewModel = restaurantDetailsViewModel,
                     onTapViewMyCart = {
                         navigationController.navigate(NavRoutes.CartScreen)
 
@@ -176,19 +188,30 @@ fun App() {
             }
 
             composable<NavRoutes.CartScreen>() {
-                CartScreen(
+                val cartViewModel = viewModel {
+                    CartViewModel()
+                }
+                CartRoute(
+                    viewModel = cartViewModel,
                     onBack = {
                         navigationController.navigateUp()
                     },
                     onPlaceOrder = {
-                        navigationController.navigate(NavRoutes.CheckOutScreen)
+                        navigationController.navigate(NavRoutes.ReviewOrderScreen)
                     },
+                    onTapNewCreateInformation = {
+                        navigationController.navigate(NavRoutes.CheckOutScreen)
+                    }
                 )
             }
 
 
             composable<NavRoutes.CheckOutScreen>() {
-                CheckoutScreen(
+                val checkOutViewModel = viewModel {
+                    CheckOutViewModel()
+                }
+                CheckoutRoute(
+                    viewModel = checkOutViewModel,
                     onPlaceOrder = {
                         navigationController.navigate(NavRoutes.ReviewOrderScreen)
                     },
@@ -199,7 +222,11 @@ fun App() {
             }
 
             composable<NavRoutes.ReviewOrderScreen>() {
-                ReviewOrderScreen(
+                val reviewOrderViewModel = viewModel {
+                    ReviewOrderViewModel()
+                }
+                ReviewOrderRoute(
+                    viewModel = reviewOrderViewModel,
                     onBack = {
                         navigationController.navigateUp()
                     },
@@ -259,7 +286,7 @@ sealed class NavRoutes {
 
 
     @Serializable
-    data class RestaurantDetailsScreen(val restaurantID: Int)
+    data class RestaurantDetailsScreen(val restaurantID: Long)
 
     @Serializable
     object CartScreen

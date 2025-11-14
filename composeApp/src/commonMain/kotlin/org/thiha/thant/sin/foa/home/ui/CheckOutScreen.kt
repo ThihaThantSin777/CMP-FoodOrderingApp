@@ -8,24 +8,81 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.thiha.thant.sin.foa.components.AppDialog
+import org.thiha.thant.sin.foa.components.AppLoadingDialog
 import org.thiha.thant.sin.foa.core.*
 import org.thiha.thant.sin.foa.components.AppOutlinedTextField
 import org.thiha.thant.sin.foa.components.AppPrimaryButton
 import org.thiha.thant.sin.foa.core.utils.ValidatorUtils
+import org.thiha.thant.sin.foa.core.utils.enums.UiState
+import org.thiha.thant.sin.foa.home.data.vos.DeliveryAddressRequestVO
+import org.thiha.thant.sin.foa.home.data.vos.PaymentAndAddressRequestVO
+import org.thiha.thant.sin.foa.home.data.vos.PaymentMethodRequestVO
+import org.thiha.thant.sin.foa.home.state.CheckOutState
+import org.thiha.thant.sin.foa.home.viewmodel.CheckOutViewModel
 
+
+@Composable
+fun CheckoutRoute(
+    viewModel: CheckOutViewModel,
+    onBack: () -> Unit = {},
+    onPlaceOrder: () -> Unit = {}
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.uiState) {
+        if (state.uiState == UiState.SUCCESS) {
+            onPlaceOrder();
+        }
+
+        if (state.uiState == UiState.FAIL) {
+            showErrorDialog = true
+        }
+    }
+
+    CheckoutScreen(
+        state = state,
+        showErrorDialog = showErrorDialog,
+        onBack = onBack,
+        onPlaceOrder = { cardNumber, expiry, cvv, nameOnCard, address ->
+            viewModel.onTapPlaceHolder(
+                PaymentAndAddressRequestVO(
+                    deliveryAddress = DeliveryAddressRequestVO(
+                        streetAddress = address,
+                    ),
+                    paymentMethod = PaymentMethodRequestVO(
+                        cardNumber = cardNumber,
+                        expiryDate = expiry,
+                        cvv = cvv.toInt(),
+                        nameOnCard = nameOnCard,
+                    )
+                )
+            )
+        },
+        onTapOKButtonDialog = {
+            showErrorDialog = false;
+        },
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutScreen(
+    state: CheckOutState,
+    showErrorDialog: Boolean,
     onBack: () -> Unit = {},
-    onPlaceOrder: () -> Unit = {}
+    onPlaceOrder: (cardNumber: String, expiry: String, cvv: String, nameOnCard: String, address: String) -> Unit,
+    onTapOKButtonDialog: () -> Unit,
 ) {
     var cardNumber by remember { mutableStateOf("") }
-    var expiry by remember { mutableStateOf("") }     // MM/YY
+    var expiry by remember { mutableStateOf("") }
     var cvv by remember { mutableStateOf("") }
     var nameOnCard by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
@@ -40,8 +97,8 @@ fun CheckoutScreen(
 
     fun validateAll() {
         cardErr = ValidatorUtils.checkCardNumberValidation(cardNumber)
-        expErr  = ValidatorUtils.checkExpiryValidation(expiry)
-        cvvErr  = ValidatorUtils.checkCvvValidation(cvv)
+        expErr = ValidatorUtils.checkExpiryValidation(expiry)
+        cvvErr = ValidatorUtils.checkCvvValidation(cvv)
         nameErr = ValidatorUtils.checkNameOnCardValidation(nameOnCard)
         addrErr = ValidatorUtils.checkAddressValidation(address)
     }
@@ -70,7 +127,7 @@ fun CheckoutScreen(
                     text = PLACE_ORDER_TITLE,
                     onClick = {
                         validateAll()
-                        if (allValid()) onPlaceOrder()
+                        if (allValid()) onPlaceOrder(cardNumber, expiry, cvv, nameOnCard, address)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -79,6 +136,9 @@ fun CheckoutScreen(
             }
         }
     ) { inner ->
+        if (state.uiState == UiState.LOADING) {
+            AppLoadingDialog()
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -196,6 +256,20 @@ fun CheckoutScreen(
             }
 
             Spacer(Modifier.height(MARGIN_40))
+
+            if (showErrorDialog) {
+                AppDialog(
+                    title = NEW_INFORMATION_CREATE_FAIL_TITLE,
+                    message = state.errorMessage,
+                    confirmText = OK_TEXT,
+                    onConfirm = {
+                        onTapOKButtonDialog()
+                    },
+                    onDismissRequest = {
+                        onTapOKButtonDialog()
+                    },
+                )
+            }
         }
     }
 }

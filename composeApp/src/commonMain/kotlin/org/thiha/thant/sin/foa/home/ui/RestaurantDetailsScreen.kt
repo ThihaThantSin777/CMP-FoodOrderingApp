@@ -1,6 +1,7 @@
 package org.thiha.thant.sin.foa.home.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,6 +38,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.thiha.thant.sin.foa.components.AppErrorView
+import org.thiha.thant.sin.foa.components.AppLoadingDialog
 import org.thiha.thant.sin.foa.components.AppNetworkImage
 import org.thiha.thant.sin.foa.components.AppPrimaryButton
 import org.thiha.thant.sin.foa.core.ADD_BUTTON_CONTAINER_SIZE
@@ -57,64 +62,65 @@ import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
 import org.thiha.thant.sin.foa.core.TEXT_REGULAR
 import org.thiha.thant.sin.foa.core.TEXT_SMALL
 import org.thiha.thant.sin.foa.core.VIEW_MY_CART_TEXT
+import org.thiha.thant.sin.foa.core.utils.enums.UiState
+import org.thiha.thant.sin.foa.home.state.RestaurantDetailsState
+import org.thiha.thant.sin.foa.home.viewmodel.RestaurantDetailsViewModel
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import org.thiha.thant.sin.foa.core.PRIMARY_COLOR
+import org.thiha.thant.sin.foa.core.RESTAURANT_ITEM_PRICE_HEIGHT
+import org.thiha.thant.sin.foa.core.RESTAURANT_ITEM_PRICE_WIDTH
+import org.thiha.thant.sin.foa.core.RESTAURANT_NOT_FOUNT_TEXT
+
+@Composable
+fun RestaurantDetailsRoute(
+    viewModel: RestaurantDetailsViewModel,
+    onTapViewMyCart: () -> Unit,
+    onTapBack: () -> Unit
+) {
+    val restaurantDetailsState by viewModel.state.collectAsStateWithLifecycle()
+
+    RestaurantDetailsScreen(
+        restaurantDetailsState = restaurantDetailsState,
+        onTapViewMyCart = onTapViewMyCart,
+        onTapBack = onTapBack,
+        onTapRetry = {
+            viewModel.loadRestaurantByID()
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RestaurantDetailsScreen(restaurantId: Int, onTapViewMyCart: () -> Unit,onTapBack: () -> Unit) {
-    val toolBars = listOf("Featured", "Popular", "All")
-    var selectedTab by remember { mutableStateOf(toolBars.first()) }
+fun RestaurantDetailsScreen(
+    restaurantDetailsState: RestaurantDetailsState,
+    onTapViewMyCart: () -> Unit,
+    onTapBack: () -> Unit,
+    onTapRetry: () -> Unit,
+) {
+    val restaurant = restaurantDetailsState.restaurantDetails
 
-    val featured = remember {
-        listOf(
-            MenuItemVM(
-                id = 1,
-                tag = "Popular",
-                title = "Spicy Chicken Sandwich",
-                subtitle = "Crispy chicken, spicy mayo,\nlettuce, tomato",
-                price = 9.99,
-                image = "https://media.istockphoto.com/id/603906484/photo/vegetable-salad.jpg?s=612x612&w=0&k=20&c=f7BnJRCqLKaj_DEQB1SB71_eRT8y1XRP52dDyYRSxuE="
-            ),
-            MenuItemVM(
-                id = 2,
-                tag = "New",
-                title = "Avocado Toast",
-                subtitle = "Smashed avocado, everything\nbagel seasoning",
-                price = 7.99,
-                image = "https://media.istockphoto.com/id/603906484/photo/vegetable-salad.jpg?s=612x612&w=0&k=20&c=f7BnJRCqLKaj_DEQB1SB71_eRT8y1XRP52dDyYRSxuE="
-            )
-        )
-    }
-    val sides = remember {
-        listOf(
-            MenuItemVM(
-                id = 3,
-                title = "Fries",
-                subtitle = "Classic crispy fries",
-                price = 3.99,
-                image = "https://media.istockphoto.com/id/603906484/photo/vegetable-salad.jpg?s=612x612&w=0&k=20&c=f7BnJRCqLKaj_DEQB1SB71_eRT8y1XRP52dDyYRSxuE="
-            ),
-            MenuItemVM(
-                id = 4,
-                title = "Onion Rings",
-                subtitle = "Golden brown onion rings",
-                price = 4.99,
-                image = "https://media.istockphoto.com/id/603906484/photo/vegetable-salad.jpg?s=612x612&w=0&k=20&c=f7BnJRCqLKaj_DEQB1SB71_eRT8y1XRP52dDyYRSxuE="
-            )
-        )
+    val toolBars = remember(restaurant) {
+        restaurant?.foodCategories
+            ?.map { it.name }
+            ?.takeIf { it.isNotEmpty() }
+            ?: listOf("Menu")
     }
 
-    var cart by remember { mutableStateOf(mapOf<Int, Int>()) }
+    var selectedTab by remember(restaurant) {
+        mutableStateOf(toolBars.first())
+    }
+
+    var cart by remember { mutableStateOf<Map<Long, Int>>(emptyMap()) }
     val cartCount = cart.values.sum()
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Burger Joint") },
+                title = { Text(restaurant?.name ?: "") },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        onTapBack()
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                    IconButton(onClick = { onTapBack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 }
             )
@@ -125,13 +131,14 @@ fun RestaurantDetailsScreen(restaurantId: Int, onTapViewMyCart: () -> Unit,onTap
                     Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = MARGIN_MEDIUM_2, vertical = MARGIN_CARD_MEDIUM_2),
+                        .padding(
+                            horizontal = MARGIN_MEDIUM_2,
+                            vertical = MARGIN_CARD_MEDIUM_2
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     AppPrimaryButton(
-                        onClick = {
-                            onTapViewMyCart()
-                        },
+                        onClick = { onTapViewMyCart() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(DEFAULT_BUTTON_HEIGHT),
@@ -141,79 +148,110 @@ fun RestaurantDetailsScreen(restaurantId: Int, onTapViewMyCart: () -> Unit,onTap
             }
         }
     ) { inner ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(inner)
-        ) {
-            item {
-                AppNetworkImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(DEFAULT_RESTAURANT_IMAGE_HEIGHT),
-                    imageUrl = "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=1800",
-                    shape = RoundedCornerShape(0.dp)
-                )
+
+        when (restaurantDetailsState.uiState) {
+            UiState.LOADING -> {
+                AppLoadingDialog()
             }
 
-            // Tabs
-            item {
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = MARGIN_MEDIUM_2, bottom = MARGIN_MEDIUM),
-                ) {
-                    items(toolBars.size) { i ->
-                        BottomToolBar(
-                            label = toolBars[i],
-                            isSelect = toolBars[i] == selectedTab,
-                            onTap = { selectedTab = it }
+            UiState.FAIL -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AppErrorView(
+                        message = restaurantDetailsState.errorMessage,
+                        onTapRetry = onTapRetry
+                    )
+                }
+            }
+
+            else -> {
+                if (restaurant == null) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        AppErrorView(
+                            message = RESTAURANT_NOT_FOUNT_TEXT,
+                            onTapRetry = onTapRetry
                         )
                     }
+                    return@Scaffold
                 }
-                HorizontalDivider()
-            }
 
-            // Featured section
-            item { Spacer(Modifier.height(MARGIN_MEDIUM_2)) }
-            item {
-                SectionHeader(
-                    text = selectedTab,
-                )
-            }
-            items(featured.size) { idx ->
-                val item = featured[idx]
-                MenuRow(
-                    data = item,
-                    count = cart[item.id] ?: 0,
-                    onAdd = {
-                        cart = cart.toMutableMap().apply {
-                            put(item.id, (get(item.id) ?: 0) + 1)
-                        }
+                val categories = restaurant.foodCategories
+                val selectedCategory = categories.firstOrNull { it.name == selectedTab }
+                    ?: categories.firstOrNull()
+
+                val foodItems = selectedCategory?.foodItems.orEmpty()
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(inner)
+                ) {
+
+                    item {
+                        AppNetworkImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(DEFAULT_RESTAURANT_IMAGE_HEIGHT),
+                            imageUrl = restaurant.imageUrl,
+                            shape = RoundedCornerShape(0.dp)
+                        )
                     }
-                )
-            }
 
-            item { Spacer(Modifier.height(MARGIN_MEDIUM_3)) }
-            item { SectionHeader("Sides") }
-            items(sides.size) { idx ->
-                val item = sides[idx]
-                MenuRow(
-                    data = item,
-                    count = cart[item.id] ?: 0,
-                    onAdd = {
-                        cart = cart.toMutableMap().apply {
-                            put(item.id, (get(item.id) ?: 0) + 1)
+                    item {
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    top = MARGIN_MEDIUM_2,
+                                    bottom = MARGIN_MEDIUM
+                                ),
+                        ) {
+                            items(toolBars) { label ->
+                                BottomToolBar(
+                                    label = label,
+                                    isSelect = label == selectedTab,
+                                    onTap = { selectedTab = it }
+                                )
+                            }
                         }
+                        HorizontalDivider()
                     }
-                )
-            }
 
-            item { Spacer(Modifier.height(MARGIN_40)) }
+
+                    item { Spacer(Modifier.height(MARGIN_MEDIUM_2)) }
+                    item {
+                        SectionHeader(
+                            text = selectedCategory?.name ?: "",
+                        )
+                    }
+
+
+                    items(foodItems) { food ->
+                        val vm = MenuItemVM(
+                            id = food.id,
+                            tag = selectedCategory?.name,
+                            title = food.name,
+                            subtitle = food.description,
+                            price = food.price,
+                            image = food.imageUrl
+                        )
+
+                        MenuRow(
+                            data = vm,
+                            count = cart[vm.id] ?: 0,
+                            onAdd = {
+                                cart = cart.toMutableMap().apply {
+                                    put(vm.id, (get(vm.id) ?: 0) + 1)
+                                }
+                            }
+                        )
+                    }
+
+                    item { Spacer(Modifier.height(MARGIN_40)) }
+                }
+            }
         }
     }
 }
-
 
 @Composable
 fun BottomToolBar(label: String, isSelect: Boolean, onTap: (String) -> Unit) {
@@ -246,8 +284,13 @@ fun BottomToolBar(label: String, isSelect: Boolean, onTap: (String) -> Unit) {
 fun SectionHeader(text: String) {
     Text(
         text = text,
-        modifier = Modifier.padding(horizontal = MARGIN_MEDIUM_3, vertical = MARGIN_MEDIUM),
-        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+        modifier = Modifier.padding(
+            horizontal = MARGIN_MEDIUM_3,
+            vertical = MARGIN_MEDIUM
+        ),
+        style = MaterialTheme.typography.headlineSmall.copy(
+            fontWeight = FontWeight.SemiBold
+        )
     )
 }
 
@@ -304,7 +347,7 @@ fun MenuRow(
         ) {
             AppNetworkImage(
                 imageUrl = data.image,
-                shape = RoundedCornerShape(MARGIN_MEDIUM_2)
+                shape = RoundedCornerShape(MARGIN_MEDIUM)
             )
 
             AddButton(count = count, onClick = onAdd)
@@ -315,12 +358,15 @@ fun MenuRow(
 @Composable
 fun PriceChip(price: Double) {
     Box(
-        modifier = Modifier
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.width(RESTAURANT_ITEM_PRICE_WIDTH).height(RESTAURANT_ITEM_PRICE_HEIGHT)
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
                 shape = RoundedCornerShape(MARGIN_MEDIUM_3)
             )
-            .padding(horizontal = MARGIN_CARD_MEDIUM_2, vertical = MARGIN_MEDIUM)
+            .padding(
+                horizontal = MARGIN_CARD_MEDIUM_2,
+            )
     ) {
         Text(
             text = "$$price",
@@ -359,9 +405,8 @@ fun AddButton(count: Int, onClick: () -> Unit) {
     }
 }
 
-
 data class MenuItemVM(
-    val id: Int,
+    val id: Long,
     val tag: String? = null,
     val title: String,
     val subtitle: String,

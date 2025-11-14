@@ -6,20 +6,20 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PaymentAndAddressRequestVO(
     @SerialName("delivery_address")
-    val deliveryAddress: DeliveryAddressRequestVo,
+    val deliveryAddress: DeliveryAddressRequestVO,
 
     @SerialName("payment_method")
-    val paymentMethod: PaymentMethodRequestVo
+    val paymentMethod: PaymentMethodRequestVO
 )
 
 @Serializable
-data class DeliveryAddressRequestVo(
+data class DeliveryAddressRequestVO(
     @SerialName("street_address")
     val streetAddress: String
 )
 
 @Serializable
-data class PaymentMethodRequestVo(
+data class PaymentMethodRequestVO(
     @SerialName("card_number")
     val cardNumber: String,
 

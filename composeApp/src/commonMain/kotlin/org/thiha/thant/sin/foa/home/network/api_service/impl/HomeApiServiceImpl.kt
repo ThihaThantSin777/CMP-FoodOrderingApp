@@ -13,9 +13,10 @@ import org.thiha.thant.sin.foa.core.utils.API_GET_ADDRESSES_PAYMENT
 import org.thiha.thant.sin.foa.core.utils.API_GET_ALL_RESTAURANTS
 import org.thiha.thant.sin.foa.core.utils.API_GET_RESTAURANT_DETAILS
 import org.thiha.thant.sin.foa.core.utils.API_SUBMIT_ORDER
-import org.thiha.thant.sin.foa.home.data.vos.CreateOrderRequestVo
+import org.thiha.thant.sin.foa.home.data.vos.CreateOrderRequestVO
 import org.thiha.thant.sin.foa.home.data.vos.PaymentAndAddressRequestVO
 import org.thiha.thant.sin.foa.home.data.vos.PaymentAndAddressVO
+import org.thiha.thant.sin.foa.home.data.vos.RestaurantDetailsVO
 import org.thiha.thant.sin.foa.home.data.vos.RestaurantVO
 import org.thiha.thant.sin.foa.home.network.api_service.HomeApiService
 
@@ -29,12 +30,12 @@ object HomeApiServiceImpl : HomeApiService {
         return transformResult<List<RestaurantVO>>(httpResponse)
     }
 
-    override suspend fun getRestaurantByID(id: Long): RestaurantVO {
+    override suspend fun getRestaurantByID(id: Long): RestaurantDetailsVO {
         val httpResponse = HttpClientProvider.httpClient.get("$API_GET_RESTAURANT_DETAILS/$id") {
             ///TODO Need to Delect After implement Persistent
             header(HttpHeaders.Authorization, "Bearer ${State.token}")
         }
-        return transformResult<RestaurantVO>(httpResponse)
+        return transformResult<RestaurantDetailsVO>(httpResponse)
     }
 
     override suspend fun getDeliveryAddressAndPaymentMethod(): PaymentAndAddressVO {
@@ -45,17 +46,17 @@ object HomeApiServiceImpl : HomeApiService {
         return transformResult<PaymentAndAddressVO>(httpResponse)
     }
 
-    override suspend fun addDeliveryAddressAndPaymentMethod(paymentAndAddressRequestVO: PaymentAndAddressRequestVO): Unit {
+    override suspend fun addDeliveryAddressAndPaymentMethod(paymentAndAddressRequestVO: PaymentAndAddressRequestVO): PaymentAndAddressVO {
         val httpResponse = HttpClientProvider.httpClient.post(API_ADD_ADDRESS_PAYMENT) {
             ///TODO Need to Delect After implement Persistent
             header(HttpHeaders.Authorization, "Bearer ${State.token}")
 
             setBody(paymentAndAddressRequestVO)
         }
-        return transformResult<Unit>(httpResponse)
+        return transformResult<PaymentAndAddressVO>(httpResponse)
     }
 
-    override suspend fun submitOrder(createOrderRequestVo: CreateOrderRequestVo) {
+    override suspend fun submitOrder(createOrderRequestVo: CreateOrderRequestVO) {
         val httpResponse = HttpClientProvider.httpClient.post(API_SUBMIT_ORDER) {
             ///TODO Need to Delect After implement Persistent
             header(HttpHeaders.Authorization, "Bearer ${State.token}")

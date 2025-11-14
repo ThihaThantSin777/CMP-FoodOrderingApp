@@ -6,11 +6,29 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PaymentAndAddressVO(
     @SerialName("payment_methods")
-    val paymentMethods: List<PaymentMethodVO>,
+    val paymentMethods: List<PaymentMethodVO>?,
 
     @SerialName("delivery_addresses")
-    val deliveryAddresses: List<DeliveryAddressVO>
-)
+    val deliveryAddresses: List<DeliveryAddressVO>?,
+
+    @SerialName("payment_method")
+    val paymentMethod: PaymentMethodVO?,
+
+    @SerialName("delivery_address")
+    val deliveryAddress: DeliveryAddressVO?
+) {
+    fun getPaymentMethodsByFilterEmptyData(): List<PaymentMethodVO> {
+        return paymentMethods?.filter {
+            it.cardNumber.isNotEmpty() && it.nameOnCard.isNotEmpty() && it.cvv > 0 && it.expiryDate.isNotEmpty()
+        }?.toList() ?: listOf()
+    }
+
+    fun getDeliveryAddressByFilterEmptyData(): List<DeliveryAddressVO> {
+        return deliveryAddresses?.filter {
+            it.streetAddress.isNotBlank()
+        }?.toList() ?: listOf()
+    }
+}
 
 @Serializable
 data class PaymentMethodVO(

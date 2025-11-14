@@ -9,21 +9,68 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import foodorderingapp.composeapp.generated.resources.Res
 import foodorderingapp.composeapp.generated.resources.credit_card_image
 import org.jetbrains.compose.resources.painterResource
+import org.thiha.thant.sin.foa.components.AppDialog
+import org.thiha.thant.sin.foa.components.AppLoadingDialog
 import org.thiha.thant.sin.foa.components.AppNetworkImage
 import org.thiha.thant.sin.foa.components.AppPrimaryButton
 import org.thiha.thant.sin.foa.core.*
+import org.thiha.thant.sin.foa.core.utils.enums.UiState
+import org.thiha.thant.sin.foa.home.state.ReviewOrderState
+import org.thiha.thant.sin.foa.home.viewmodel.ReviewOrderViewModel
+
+@Composable
+fun ReviewOrderRoute(
+    viewModel: ReviewOrderViewModel,
+    onBack: () -> Unit = {},
+    onConfirmOrder: () -> Unit = {}
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.uiState) {
+        if (state.uiState == UiState.SUCCESS) {
+            onConfirmOrder();
+        }
+
+        if (state.uiState == UiState.FAIL) {
+            showErrorDialog = true
+        }
+    }
+
+    ReviewOrderScreen(
+        onBack = onBack,
+        state = state,
+        showErrorDialog = showErrorDialog,
+        onTapOKButtonDialog = {
+            showErrorDialog = false;
+        },
+        onConfirmOrder = {
+            // viewModel.onTapConfirmOrder()
+        }
+    )
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewOrderScreen(
     onBack: () -> Unit = {},
-    onConfirmOrder: () -> Unit = {}
+    onConfirmOrder: () -> Unit = {},
+    state: ReviewOrderState,
+    showErrorDialog: Boolean,
+    onTapOKButtonDialog: () -> Unit,
 ) {
     val orderItems = listOf(
         ReviewItemVM(
@@ -75,6 +122,9 @@ fun ReviewOrderScreen(
             }
         }
     ) { inner ->
+        if (state.uiState == UiState.LOADING) {
+            AppLoadingDialog()
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -95,7 +145,6 @@ fun ReviewOrderScreen(
 
             Spacer(Modifier.height(MARGIN_MEDIUM_3))
 
-            // ---------- Delivery Address ----------
             Text(
                 DELIVERY_ADDRESS_TITLE,
                 fontWeight = FontWeight.SemiBold,
@@ -138,7 +187,6 @@ fun ReviewOrderScreen(
 
             Spacer(Modifier.height(MARGIN_MEDIUM_3))
 
-            // ---------- Order Total ----------
             Text(
                 ORDER_TITLE_TEXT,
                 fontSize = TEXT_REGULAR_3X,
@@ -163,6 +211,20 @@ fun ReviewOrderScreen(
             }
 
             Spacer(Modifier.height(MARGIN_MEDIUM_2))
+
+            if (showErrorDialog) {
+                AppDialog(
+                    title = SUBMIT_ORDER_FAIL_TITLE,
+                    message = state.errorMessage,
+                    confirmText = OK_TEXT,
+                    onConfirm = {
+                        onTapOKButtonDialog()
+                    },
+                    onDismissRequest = {
+                        onTapOKButtonDialog()
+                    },
+                )
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateOrderRequestVo(
+data class CreateOrderRequestVO(
     @SerialName("payment_method_id")
     val paymentMethodId: Long,
 
@@ -12,11 +12,11 @@ data class CreateOrderRequestVo(
     val deliveryAddressId: Long,
 
     @SerialName("food_items")
-    val foodItems: List<FoodItemRequestVo>
+    val foodItems: List<FoodItemRequestVO>
 )
 
 @Serializable
-data class FoodItemRequestVo(
+data class FoodItemRequestVO(
     val id: Long,
     val quantity: Int
 )
