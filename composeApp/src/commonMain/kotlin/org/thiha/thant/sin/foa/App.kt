@@ -14,7 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.thiha.thant.sin.foa.auth.data.LoginRepository
+import org.thiha.thant.sin.foa.auth.data.AuthRepository
 import org.thiha.thant.sin.foa.auth.ui.ForgetPasswordScreen
 import org.thiha.thant.sin.foa.auth.data.vos.LoginRequestVO
 import org.thiha.thant.sin.foa.auth.ui.LoginScreen
@@ -38,7 +38,7 @@ fun App() {
 
     LaunchedEffect(Unit) {
        try {
-           val loginVO = LoginRepository.login(LoginRequestVO("thantsin7755@gmail.com", "Thantsin7755"))
+           val loginVO = AuthRepository.login(LoginRequestVO("thantsin7755@gmail.com", "Thantsin7755"))
            println("Login Data: $loginVO")
        }catch (e : Exception){
            println("Login Exception: $e")
