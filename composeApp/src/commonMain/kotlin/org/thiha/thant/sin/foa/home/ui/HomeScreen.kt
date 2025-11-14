@@ -17,9 +17,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import foodorderingapp.composeapp.generated.resources.Res
 import foodorderingapp.composeapp.generated.resources.shop_cart_icon
 import org.jetbrains.compose.resources.painterResource
@@ -38,10 +40,23 @@ import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
 import org.thiha.thant.sin.foa.core.TEXT_LARGE
 import org.thiha.thant.sin.foa.core.TEXT_REGULAR_2X
 import org.thiha.thant.sin.foa.core.TEXT_REGULAR_3X
+import org.thiha.thant.sin.foa.home.data.vos.RestaurantVO
+import org.thiha.thant.sin.foa.home.state.HomeState
+import org.thiha.thant.sin.foa.home.viewmodel.HomeViewModel
+
+@Composable
+fun HomeRoute(viewModel: HomeViewModel, onTapCart: () -> Unit, onTapRestaurant: () -> Unit) {
+
+    val homeState by viewModel.state.collectAsStateWithLifecycle()
+    HomeScreen(onTapRestaurant = onTapRestaurant, onTapCart = onTapCart, state = homeState)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onTapCart: () -> Unit, onTapRestaurant: () -> Unit) {
+fun HomeScreen(
+    state: HomeState,
+    onTapCart: () -> Unit, onTapRestaurant: () -> Unit,
+) {
     Scaffold(topBar = {
         TopAppBar(
             title = {
@@ -62,39 +77,47 @@ fun HomeScreen(onTapCart: () -> Unit, onTapRestaurant: () -> Unit) {
             }
         )
     }) {
+        val restaurantList = state.restaurantList;
         LazyColumn(modifier = Modifier.fillMaxSize().padding(it)) {
-            items(20) { _ ->
-                RestaurantsNearYouCard(Modifier.clickable {
-                    onTapRestaurant()
-                })
-                Spacer(modifier = Modifier.height(MARGIN_LARGE))
+            if (restaurantList.isNotEmpty()) {
+                items(restaurantList.size) { index ->
+                    RestaurantsNearYouCard(
+                        restaurant = restaurantList[index],
+                        modifier = Modifier.clickable {
+                            onTapRestaurant()
+                        })
+                    Spacer(modifier = Modifier.height(MARGIN_LARGE))
 
+                }
             }
+
         }
     }
 }
 
 
 @Composable
-fun RestaurantsNearYouCard(modifier: Modifier) {
+fun RestaurantsNearYouCard(modifier: Modifier, restaurant: RestaurantVO) {
     Column(
         modifier = modifier
             .padding(horizontal = MARGIN_CARD_MEDIUM_2),
     ) {
         AppNetworkImage(
             modifier = Modifier.fillMaxWidth().height(DEFAULT_RESTAURANT_IMAGE_HEIGHT),
-            imageUrl = "https://media.istockphoto.com/id/603906484/photo/vegetable-salad.jpg?s=612x612&w=0&k=20&c=f7BnJRCqLKaj_DEQB1SB71_eRT8y1XRP52dDyYRSxuE=",
+            imageUrl = restaurant.imageUrl,
             shape = RoundedCornerShape(MARGIN_MEDIUM_3),
         )
         Spacer(
             modifier = Modifier.height(MARGIN_MEDIUM_3),
         )
-        Text("Pizza Palace", fontWeight = FontWeight.W700, fontSize = TEXT_REGULAR_3X)
+        Text(restaurant.name, fontWeight = FontWeight.W700, fontSize = TEXT_REGULAR_3X)
         Spacer(
             modifier = Modifier.height(MARGIN_SMALL),
         )
         Text(
-            "Dinner, Lunche",
+            restaurant.restaurantCategories.map {
+                it.name
+            }.toList().joinToString(","),
             fontWeight = FontWeight.W400,
             fontSize = TEXT_REGULAR_2X,
             color = SECONDARY_COLOR,
@@ -106,7 +129,7 @@ fun RestaurantsNearYouCard(modifier: Modifier) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                "4.8 ⭐\uFE0F (3,300+)",
+                "${restaurant.averageRating} ⭐\uFE0F (3,300+)",
                 fontWeight = FontWeight.W400,
                 fontSize = TEXT_REGULAR_2X,
                 color = SECONDARY_COLOR,

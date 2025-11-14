@@ -1,4 +1,4 @@
-package org.thiha.thant.sin.foa
+package org.thiha.thant.sin.foa.home.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -28,9 +28,27 @@ import org.thiha.thant.sin.foa.core.HOME_ROUTE
 import org.thiha.thant.sin.foa.core.ORDER_ROUTE
 import org.thiha.thant.sin.foa.core.PROFILE_ROUTE
 import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
-import org.thiha.thant.sin.foa.home.ui.HomeScreen
+import org.thiha.thant.sin.foa.home.viewmodel.HomeViewModel
 import org.thiha.thant.sin.foa.order.ui.OrderScreen
 import org.thiha.thant.sin.foa.profile.ui.ProfileScreen
+
+@Composable
+fun MainRoute(
+    homeViewModel: HomeViewModel, desireRoute: String = HOME_ROUTE,
+    onTapAboutScreen: () -> Unit,
+    onTapLogout: () -> Unit,
+    onTapCart: () -> Unit,
+    onTapRestaurant: () -> Unit,
+) {
+    MainScreen(
+        desireRoute = desireRoute,
+        onTapAboutScreen = onTapAboutScreen,
+        onTapLogout = onTapLogout,
+        onTapCart = onTapCart,
+        onTapRestaurant = onTapRestaurant,
+        homeViewModel = homeViewModel,
+    )
+}
 
 @Composable
 fun MainScreen(
@@ -39,6 +57,7 @@ fun MainScreen(
     onTapLogout: () -> Unit,
     onTapCart: () -> Unit,
     onTapRestaurant: () -> Unit,
+    homeViewModel: HomeViewModel,
 ) {
     var selectedItem by remember {
         mutableStateOf(desireRoute)
@@ -95,7 +114,11 @@ fun MainScreen(
     }) {
         when (selectedItem) {
             HOME_ROUTE -> {
-                HomeScreen(onTapCart = onTapCart, onTapRestaurant = onTapRestaurant)
+                HomeRoute(
+                    viewModel = homeViewModel,
+                    onTapCart = onTapCart,
+                    onTapRestaurant = onTapRestaurant
+                )
             }
 
             ORDER_ROUTE -> {
@@ -110,7 +133,11 @@ fun MainScreen(
             }
 
             else -> {
-                HomeScreen(onTapCart = onTapCart, onTapRestaurant = onTapRestaurant)
+                HomeRoute(
+                    viewModel = homeViewModel,
+                    onTapCart = onTapCart,
+                    onTapRestaurant = onTapRestaurant
+                )
             }
         }
     }

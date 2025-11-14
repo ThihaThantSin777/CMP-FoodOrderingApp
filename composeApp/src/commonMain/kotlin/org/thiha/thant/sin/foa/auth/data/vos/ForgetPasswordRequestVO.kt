@@ -5,10 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ForgetPasswordRequestVO(
-    @SerialName("name")
+    @SerialName("email")
     val email: String,
 
     @SerialName("password")
-    val password: String?
+    val password: String? = null
 ) {
 }

@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,18 +25,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.thiha.thant.sin.foa.auth.state.AuthState
+import org.thiha.thant.sin.foa.auth.viewmodel.LoginViewModel
+import org.thiha.thant.sin.foa.components.AppDialog
+import org.thiha.thant.sin.foa.components.AppLoadingDialog
 import org.thiha.thant.sin.foa.components.AppOutlinedTextField
 import org.thiha.thant.sin.foa.components.AppPrimaryButton
 import org.thiha.thant.sin.foa.core.DONT_HAVE_ACCOUNT_TEXT
 import org.thiha.thant.sin.foa.core.EMAIL_HINT_TEXT
 import org.thiha.thant.sin.foa.core.FORGET_PASSWORD_TEXT
+import org.thiha.thant.sin.foa.core.LOGIN_ERROR_TITLE
 import org.thiha.thant.sin.foa.core.LOGIN_TEXT
 import org.thiha.thant.sin.foa.core.MARGIN_40
 import org.thiha.thant.sin.foa.core.MARGIN_CARD_MEDIUM_2
 import org.thiha.thant.sin.foa.core.MARGIN_LARGE
 import org.thiha.thant.sin.foa.core.MARGIN_MEDIUM
 import org.thiha.thant.sin.foa.core.MARGIN_MEDIUM_3
+import org.thiha.thant.sin.foa.core.OK_TEXT
 import org.thiha.thant.sin.foa.core.PASSWORD_HINT_TEXT
 import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
 import org.thiha.thant.sin.foa.core.SIGNUP_TEXT
@@ -43,15 +52,60 @@ import org.thiha.thant.sin.foa.core.TEXT_LARGE_3x
 import org.thiha.thant.sin.foa.core.TEXT_REGULAR_2X
 import org.thiha.thant.sin.foa.core.WELCOME_BACK_TITLE_TEXT
 import org.thiha.thant.sin.foa.core.utils.ValidatorUtils
+import org.thiha.thant.sin.foa.core.utils.enums.UiState
 
+@Composable
+fun LoginRoute(
+    viewModel: LoginViewModel,
+    onTapSignUp: () -> Unit,
+    onTapForgetPassword: () -> Unit,
+    onNavigateMainScreen: () -> Unit
+) {
+    val authState by viewModel.state.collectAsStateWithLifecycle()
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(authState.uiState) {
+        if (authState.uiState == UiState.SUCCESS) {
+            onNavigateMainScreen();
+        }
+
+        if (authState.uiState == UiState.FAIL) {
+            showErrorDialog = true
+        }
+    }
+
+
+    LoginScreen(
+        onTapForgetPassword = onTapForgetPassword,
+        onTapSignUp = onTapSignUp,
+        onTapLogin = { email, password ->
+            viewModel.onTapLogin(email, password);
+        },
+        onTapOKButtonDialog = {
+            showErrorDialog = false;
+        },
+        authState = authState,
+        showErrorDialog = showErrorDialog
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(onTapSignUp: () -> Unit, onTapForgetPassword: () -> Unit, onTapLogin: () -> Unit) {
+fun LoginScreen(
+    onTapOKButtonDialog: () -> Unit,
+    onTapSignUp: () -> Unit,
+    onTapForgetPassword: () -> Unit,
+    onTapLogin: (email: String, password: String) -> Unit,
+    authState: AuthState,
+    showErrorDialog: Boolean,
+
+    ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var emailErrorText by remember { mutableStateOf<String?>(null) }
     var passwordErrorText by remember { mutableStateOf<String?>(null) }
+    val focusManager = LocalFocusManager.current
 
     Scaffold(
         topBar = {
@@ -69,6 +123,10 @@ fun LoginScreen(onTapSignUp: () -> Unit, onTapForgetPassword: () -> Unit, onTapL
             )
         }
     ) { paddingValues ->
+        if (authState.uiState == UiState.LOADING) {
+            AppLoadingDialog()
+        }
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize().background(Color.White)
@@ -112,6 +170,7 @@ fun LoginScreen(onTapSignUp: () -> Unit, onTapForgetPassword: () -> Unit, onTapL
             )
             Spacer(modifier = Modifier.height(MARGIN_CARD_MEDIUM_2))
             AppPrimaryButton(
+                enabled = authState.uiState != UiState.LOADING,
                 text = LOGIN_TEXT,
                 onClick = {
                     emailErrorText = ValidatorUtils.checkEmailValidation(email);
@@ -120,7 +179,8 @@ fun LoginScreen(onTapSignUp: () -> Unit, onTapForgetPassword: () -> Unit, onTapL
                     if ((emailErrorText?.isEmpty() ?: false) && (passwordErrorText?.isEmpty()
                             ?: false)
                     ) {
-                        onTapLogin()
+                        focusManager.clearFocus();
+                        onTapLogin(email, password)
                     }
                 },
                 modifier = Modifier
@@ -141,6 +201,19 @@ fun LoginScreen(onTapSignUp: () -> Unit, onTapForgetPassword: () -> Unit, onTapL
                     onTapSignUp()
                 }
             )
+            if (showErrorDialog) {
+                AppDialog(
+                    title = LOGIN_ERROR_TITLE,
+                    message = authState.errorMessage ?: "",
+                    confirmText = OK_TEXT,
+                    onConfirm = {
+                        onTapOKButtonDialog()
+                    },
+                    onDismissRequest = {
+                        onTapOKButtonDialog()
+                    },
+                )
+            }
         }
     }
 }

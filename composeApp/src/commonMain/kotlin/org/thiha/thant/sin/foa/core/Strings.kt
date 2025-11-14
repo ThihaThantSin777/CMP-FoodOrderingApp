@@ -5,7 +5,7 @@ const val WELCOME_BACK_TITLE_TEXT = "Welcome back";
 const val EMAIL_HINT_TEXT = "Email";
 const val PASSWORD_HINT_TEXT = "Password";
 
-const val CONFIRM_PASSWORD_HINT_TEXT = "Password";
+const val CONFIRM_PASSWORD_HINT_TEXT = "Confirm Password";
 const val FORGET_PASSWORD_TEXT = "Forget Password?";
 const val LOGIN_TEXT = "Login";
 const val DONT_HAVE_ACCOUNT_TEXT = "Don't have an account";
@@ -70,28 +70,33 @@ const val CARD_EXPIRY_HINT_TEXT = "MM/YY";
 
 const val CARD_CVC_HINT_TEXT = "CVV";
 
-const val CARD_NAME_ON_CARD_HINT_TEXT="Name on Card";
+const val CARD_NAME_ON_CARD_HINT_TEXT = "Name on Card";
 
-const val CARD_DELIVERY_ADDRESS_TEXT="Delivery Address";
+const val CARD_DELIVERY_ADDRESS_TEXT = "Delivery Address";
 
-const val CARD_DELIVERY_ADDRESS_HINT_TEXT="Full Address";
+const val CARD_DELIVERY_ADDRESS_HINT_TEXT = "Full Address";
 
-const val SAVE_CAR_TEXT="Save for future use"
+const val SAVE_CAR_TEXT = "Save for future use"
 
-const val REVIEW_ORDER_TITLE="Review Order"
+const val REVIEW_ORDER_TITLE = "Review Order"
 
-const val CONFIRM_ORDER_TITLE="Confirm Order"
+const val CONFIRM_ORDER_TITLE = "Confirm Order"
 
-const val ORDER_SUMMARY_TITLE="Order Summary"
+const val ORDER_SUMMARY_TITLE = "Order Summary"
 
-const val DELIVERY_ADDRESS_TITLE="Delivery Address"
+const val DELIVERY_ADDRESS_TITLE = "Delivery Address"
 
-const val PAYMENT_METHOD_TITLE="Payment Method"
+const val PAYMENT_METHOD_TITLE = "Payment Method"
 
-const val ORDER_TITLE_TEXT="Order Total"
+const val ORDER_TITLE_TEXT = "Order Total"
 
-const val TOTAL_TITLE_TEXT="Total"
+const val TOTAL_TITLE_TEXT = "Total"
 
+const val RETRY_TEXT = "Retry";
+
+const val OK_TEXT = "OK"
+
+const val LOADING_TEXT = "Loading..."
 
 
 //Error Message Strings
@@ -132,6 +137,14 @@ const val ENTER_NAME_ON_CARD_TEXT = "Please enter name on card."
 const val NAME_ON_CARD_VALID_FORMAT_TEXT = "Card name is invalid.";
 
 const val ENTER_ADDRESS_TEXT = "Please enter address.";
+
+const val LOGIN_ERROR_TITLE = "Login Fail";
+
+const val SIGNUP_ERROR_TITLE = "Signup Fail";
+
+const val CHECK_EMAIL_ERROR_TITLE = "Email not Register";
+
+const val RESET_PASSWORD_ERROR_TITLE = "Reset Password Fail";
 
 
 //Route

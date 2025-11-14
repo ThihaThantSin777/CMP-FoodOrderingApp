@@ -4,28 +4,33 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.thiha.thant.sin.foa.auth.data.AuthRepository
+import org.thiha.thant.sin.foa.auth.ui.ForgetPasswordRoute
 import org.thiha.thant.sin.foa.auth.ui.ForgetPasswordScreen
-import org.thiha.thant.sin.foa.auth.data.vos.LoginRequestVO
-import org.thiha.thant.sin.foa.auth.ui.LoginScreen
+import org.thiha.thant.sin.foa.auth.ui.LoginRoute
+import org.thiha.thant.sin.foa.auth.ui.ResetPasswordRoute
 import org.thiha.thant.sin.foa.auth.ui.ResetPasswordScreen
-import org.thiha.thant.sin.foa.auth.ui.SignupScreen
+import org.thiha.thant.sin.foa.auth.ui.SignupRoute
+import org.thiha.thant.sin.foa.auth.viewmodel.ForgetPasswordViewModel
+import org.thiha.thant.sin.foa.auth.viewmodel.LoginViewModel
+import org.thiha.thant.sin.foa.auth.viewmodel.ResetPasswordViewModel
+import org.thiha.thant.sin.foa.auth.viewmodel.SignupViewModel
 import org.thiha.thant.sin.foa.home.ui.CartScreen
 import org.thiha.thant.sin.foa.home.ui.CheckoutScreen
+import org.thiha.thant.sin.foa.home.ui.MainRoute
 import org.thiha.thant.sin.foa.home.ui.OrderConfirmScreen
 import org.thiha.thant.sin.foa.home.ui.RestaurantDetailsScreen
 import org.thiha.thant.sin.foa.home.ui.ReviewOrderScreen
-
+import org.thiha.thant.sin.foa.home.viewmodel.HomeViewModel
 import org.thiha.thant.sin.foa.profile.ui.AboutScreen
 
 @Composable
@@ -36,14 +41,6 @@ fun App() {
     val focusManager = LocalFocusManager.current;
     val interactionSource = remember { MutableInteractionSource() }
 
-    LaunchedEffect(Unit) {
-       try {
-           val loginVO = AuthRepository.login(LoginRequestVO("thantsin7755@gmail.com", "Thantsin7755"))
-           println("Login Data: $loginVO")
-       }catch (e : Exception){
-           println("Login Exception: $e")
-       }
-    }
 
     MaterialTheme {
         NavHost(
@@ -55,40 +52,77 @@ fun App() {
                 focusManager.clearFocus()
             }) {
             composable<NavRoutes.LoginScreen>() {
-                LoginScreen(onTapForgetPassword = {
-                    navigationController.navigate(NavRoutes.ForgetPasswordScreen)
+                val loginViewModel = viewModel {
+                    LoginViewModel()
+                }
+                LoginRoute(
+                    viewModel = loginViewModel,
+                    onTapForgetPassword = {
+                        navigationController.navigate(NavRoutes.ForgetPasswordScreen)
 
-                }, onTapSignUp = {
-                    navigationController.navigate(NavRoutes.SignupScreen)
-                }, onTapLogin = {
-                    navigationController.navigate(NavRoutes.MainScreen) {
-                        popUpTo(navigationController.graph.startDestinationId) {
-                            inclusive = true
+                    }, onTapSignUp = {
+                        navigationController.navigate(NavRoutes.SignupScreen)
+                    }, onNavigateMainScreen = {
+                        navigationController.navigate(NavRoutes.MainScreen) {
+                            popUpTo(navigationController.graph.startDestinationId) {
+                                inclusive = true
+                            }
                         }
-                    }
-                })
+                    })
             }
             composable<NavRoutes.SignupScreen>() {
-                SignupScreen(onTapBack = {
-                    navigationController.navigateUp()
-                }, onTapCreateAccount = {})
+                val signUpViewModel = viewModel {
+                    SignupViewModel()
+                }
+                SignupRoute(
+                    viewModel = signUpViewModel,
+                    onTapBack = {
+                        navigationController.navigateUp()
+                    }, onNavigateMainScreen = {
+                        navigationController.navigate(NavRoutes.MainScreen) {
+                            popUpTo(navigationController.graph.startDestinationId) {
+                                inclusive = true
+                            }
+                        }
+                    })
             }
 
             composable<NavRoutes.ForgetPasswordScreen>() {
-                ForgetPasswordScreen(onTapBack = {
-                    navigationController.navigateUp()
-                }, onTapContinue = {
-                    navigationController.navigate(NavRoutes.ResetPasswordScreen)
-                })
+                val forgetPasswordViewModel = viewModel {
+                    ForgetPasswordViewModel()
+                }
+                ForgetPasswordRoute(
+                    viewModel = forgetPasswordViewModel,
+                    onTapBack = {
+                        navigationController.navigateUp()
+                    }, onTapContinue = { email ->
+                        navigationController.navigate(NavRoutes.ResetPasswordScreen(email = email))
+                    })
             }
-            composable<NavRoutes.ResetPasswordScreen>() {
-                ResetPasswordScreen(onTapBack = {
-                    navigationController.navigateUp()
-                }, onTapResetPassword = {})
+            composable<NavRoutes.ResetPasswordScreen>() { backStackEntry ->
+                val args = backStackEntry.toRoute<NavRoutes.ResetPasswordScreen>()
+                val email = args.email;
+                val resetPasswordViewModel = viewModel {
+                    ResetPasswordViewModel()
+                }
+                ResetPasswordRoute(
+                    viewModel = resetPasswordViewModel,
+                    onTapBack = {
+                        navigationController.navigateUp()
+                    },
+                    onTapResetPassword = {
+                        navigationController.navigate(NavRoutes.LoginScreen)
+                    },
+                    email = email,
+                )
             }
 
             composable<NavRoutes.MainScreen>() {
-                MainScreen(
+
+                val homeViewModel = viewModel {
+                    HomeViewModel()
+                }
+                MainRoute(
                     onTapAboutScreen = {
                         navigationController.navigate(NavRoutes.AboutScreen)
                     },
@@ -104,7 +138,8 @@ fun App() {
                     },
                     onTapRestaurant = {
                         navigationController.navigate(NavRoutes.RestaurantDetailsScreen(1))
-                    }
+                    },
+                    homeViewModel = homeViewModel,
                 )
             }
 
@@ -201,7 +236,7 @@ sealed class NavRoutes {
     object ForgetPasswordScreen
 
     @Serializable
-    object ResetPasswordScreen
+    data class ResetPasswordScreen(val email: String)
 
     //Main
     @Serializable

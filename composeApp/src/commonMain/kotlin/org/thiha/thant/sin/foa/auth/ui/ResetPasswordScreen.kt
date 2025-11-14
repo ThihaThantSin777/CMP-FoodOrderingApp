@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +25,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.thiha.thant.sin.foa.auth.state.AuthState
+import org.thiha.thant.sin.foa.auth.viewmodel.ResetPasswordViewModel
+import org.thiha.thant.sin.foa.components.AppDialog
+import org.thiha.thant.sin.foa.components.AppLoadingDialog
 import org.thiha.thant.sin.foa.components.AppOutlinedTextField
 import org.thiha.thant.sin.foa.components.AppPrimaryButton
 import org.thiha.thant.sin.foa.core.CONFIRM_PASSWORD_HINT_TEXT
@@ -31,15 +37,58 @@ import org.thiha.thant.sin.foa.core.MARGIN_CARD_MEDIUM_2
 import org.thiha.thant.sin.foa.core.MARGIN_LARGE
 import org.thiha.thant.sin.foa.core.MARGIN_MEDIUM
 import org.thiha.thant.sin.foa.core.MARGIN_MEDIUM_3
+import org.thiha.thant.sin.foa.core.OK_TEXT
 import org.thiha.thant.sin.foa.core.PASSWORD_HINT_TEXT
+import org.thiha.thant.sin.foa.core.RESET_PASSWORD_ERROR_TITLE
 import org.thiha.thant.sin.foa.core.RESET_PASSWORD_TEXT
 import org.thiha.thant.sin.foa.core.RESET_PASSWORD_TITLE_TEXT
 import org.thiha.thant.sin.foa.core.TEXT_LARGE_3x
 import org.thiha.thant.sin.foa.core.utils.ValidatorUtils
+import org.thiha.thant.sin.foa.core.utils.enums.UiState
+
+
+@Composable
+fun ResetPasswordRoute(
+    viewModel: ResetPasswordViewModel,
+    onTapBack: () -> Unit,
+    onTapResetPassword: () -> Unit,
+    email: String,
+) {
+    val authState by viewModel.state.collectAsStateWithLifecycle()
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(authState.uiState) {
+        if (authState.uiState == UiState.SUCCESS) {
+            onTapResetPassword();
+        }
+
+        if (authState.uiState == UiState.FAIL) {
+            showErrorDialog = true
+        }
+    }
+
+    ResetPasswordScreen(
+        onTapBack = onTapBack,
+        onTapOKButtonDialog = {
+            showErrorDialog = false;
+        },
+        authState = authState,
+        showErrorDialog = showErrorDialog,
+        onTapResetPassword = { password ->
+            viewModel.onTapResetPassword(email = email, password = password)
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResetPasswordScreen(onTapBack: () -> Unit, onTapResetPassword: () -> Unit) {
+fun ResetPasswordScreen(
+    onTapBack: () -> Unit,
+    onTapResetPassword: (password: String) -> Unit,
+    onTapOKButtonDialog: () -> Unit,
+    authState: AuthState,
+    showErrorDialog: Boolean,
+) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordErrorText by remember { mutableStateOf<String?>(null) }
@@ -62,6 +111,9 @@ fun ResetPasswordScreen(onTapBack: () -> Unit, onTapResetPassword: () -> Unit) {
                 },
             )
         }) { paddingValues ->
+        if (authState.uiState == UiState.LOADING) {
+            AppLoadingDialog()
+        }
         Column(
             modifier = Modifier.fillMaxSize().background(Color.White)
                 .padding(paddingValues = paddingValues)
@@ -108,13 +160,25 @@ fun ResetPasswordScreen(onTapBack: () -> Unit, onTapResetPassword: () -> Unit) {
                     if ((passwordErrorText?.isEmpty()
                             ?: false) && (confirmPasswordErrorText?.isEmpty() ?: false)
                     ) {
-                        onTapResetPassword()
+                        onTapResetPassword(confirmPassword)
                     }
                 }, modifier = Modifier.fillMaxWidth().padding(horizontal = MARGIN_MEDIUM_3)
             )
 
             Spacer(modifier = Modifier.height(MARGIN_MEDIUM))
-
+            if (showErrorDialog) {
+                AppDialog(
+                    title = RESET_PASSWORD_ERROR_TITLE,
+                    message = authState.errorMessage ?: "",
+                    confirmText = OK_TEXT,
+                    onConfirm = {
+                        onTapOKButtonDialog()
+                    },
+                    onDismissRequest = {
+                        onTapOKButtonDialog()
+                    },
+                )
+            }
         }
     }
 }
