@@ -49,16 +49,15 @@ import org.thiha.thant.sin.foa.core.utils.enums.UiState
 @Composable
 fun ForgetPasswordRoute(
     viewModel: ForgetPasswordViewModel,
-    onTapContinue: (email: String) -> Unit,
+    onTapContinue: (email: String, resetPasswordToken: String) -> Unit,
     onTapBack: () -> Unit
 ) {
     val authState by viewModel.state.collectAsStateWithLifecycle()
     var showErrorDialog by remember { mutableStateOf(false) }
-    var saveEmail: String = "";
 
     LaunchedEffect(authState.uiState) {
         if (authState.uiState == UiState.SUCCESS) {
-            onTapContinue(saveEmail);
+            onTapContinue(authState.email, authState.resetPasswordToken);
         }
 
         if (authState.uiState == UiState.FAIL) {
@@ -74,7 +73,6 @@ fun ForgetPasswordRoute(
         showErrorDialog = showErrorDialog,
         state = authState,
         onTapContinue = { email ->
-            saveEmail = email
             viewModel.onTapForgetPasswordCheck(email)
         }
     )
@@ -157,7 +155,7 @@ fun ForgetPasswordScreen(
             if (showErrorDialog) {
                 AppDialog(
                     title = CHECK_EMAIL_ERROR_TITLE,
-                    message = state.errorMessage ?: "",
+                    message = state.errorMessage,
                     confirmText = OK_TEXT,
                     onConfirm = {
                         onTapOKButtonDialog()

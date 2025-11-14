@@ -204,7 +204,7 @@ fun LoginScreen(
             if (showErrorDialog) {
                 AppDialog(
                     title = LOGIN_ERROR_TITLE,
-                    message = authState.errorMessage ?: "",
+                    message = authState.errorMessage,
                     confirmText = OK_TEXT,
                     onConfirm = {
                         onTapOKButtonDialog()

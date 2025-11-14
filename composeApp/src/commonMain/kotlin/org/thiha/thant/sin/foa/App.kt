@@ -95,13 +95,21 @@ fun App() {
                     viewModel = forgetPasswordViewModel,
                     onTapBack = {
                         navigationController.navigateUp()
-                    }, onTapContinue = { email ->
-                        navigationController.navigate(NavRoutes.ResetPasswordScreen(email = email))
+                    }, onTapContinue = { email, resetPasswordToken ->
+                        println("Email: $email")
+                        println("ResetPassword Token: $resetPasswordToken")
+                        navigationController.navigate(
+                            NavRoutes.ResetPasswordScreen(
+                                email = email,
+                                resetPasswordToken = resetPasswordToken,
+                            )
+                        )
                     })
             }
             composable<NavRoutes.ResetPasswordScreen>() { backStackEntry ->
                 val args = backStackEntry.toRoute<NavRoutes.ResetPasswordScreen>()
                 val email = args.email;
+                val resetPasswordToken = args.resetPasswordToken;
                 val resetPasswordViewModel = viewModel {
                     ResetPasswordViewModel()
                 }
@@ -114,6 +122,7 @@ fun App() {
                         navigationController.navigate(NavRoutes.LoginScreen)
                     },
                     email = email,
+                    resetPasswordToken = resetPasswordToken,
                 )
             }
 
@@ -236,7 +245,7 @@ sealed class NavRoutes {
     object ForgetPasswordScreen
 
     @Serializable
-    data class ResetPasswordScreen(val email: String)
+    data class ResetPasswordScreen(val email: String, val resetPasswordToken: String)
 
     //Main
     @Serializable

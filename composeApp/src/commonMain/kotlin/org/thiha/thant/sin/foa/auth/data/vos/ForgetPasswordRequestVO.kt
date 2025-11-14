@@ -10,5 +10,4 @@ data class ForgetPasswordRequestVO(
 
     @SerialName("password")
     val password: String? = null
-) {
-}
+)

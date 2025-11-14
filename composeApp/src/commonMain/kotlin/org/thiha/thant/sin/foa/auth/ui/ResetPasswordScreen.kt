@@ -53,13 +53,18 @@ fun ResetPasswordRoute(
     onTapBack: () -> Unit,
     onTapResetPassword: () -> Unit,
     email: String,
+    resetPasswordToken: String,
 ) {
     val authState by viewModel.state.collectAsStateWithLifecycle()
     var showErrorDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(authState.uiState) {
         if (authState.uiState == UiState.SUCCESS) {
+
+
             onTapResetPassword();
+
+
         }
 
         if (authState.uiState == UiState.FAIL) {
@@ -75,7 +80,11 @@ fun ResetPasswordRoute(
         authState = authState,
         showErrorDialog = showErrorDialog,
         onTapResetPassword = { password ->
-            viewModel.onTapResetPassword(email = email, password = password)
+            viewModel.onTapResetPassword(
+                email = email,
+                password = password,
+                resetPasswordToken = resetPasswordToken
+            )
         }
     )
 }
@@ -169,7 +178,7 @@ fun ResetPasswordScreen(
             if (showErrorDialog) {
                 AppDialog(
                     title = RESET_PASSWORD_ERROR_TITLE,
-                    message = authState.errorMessage ?: "",
+                    message = authState.errorMessage,
                     confirmText = OK_TEXT,
                     onConfirm = {
                         onTapOKButtonDialog()

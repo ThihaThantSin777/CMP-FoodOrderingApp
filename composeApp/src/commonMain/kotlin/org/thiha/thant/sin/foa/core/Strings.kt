@@ -98,6 +98,8 @@ const val OK_TEXT = "OK"
 
 const val LOADING_TEXT = "Loading..."
 
+const val RESET_PASSWORD_SUCCESS = "Password is successfully reset."
+
 
 //Error Message Strings
 const val ENTER_EMAIL_TEXT = "Please enter your email.";

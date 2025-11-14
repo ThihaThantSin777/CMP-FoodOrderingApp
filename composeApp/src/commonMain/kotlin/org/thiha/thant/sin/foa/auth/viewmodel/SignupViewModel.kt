@@ -35,7 +35,7 @@ class SignupViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 _state.update {
-                    it.copy(uiState = UiState.FAIL, errorMessage = e.message)
+                    it.copy(uiState = UiState.FAIL, errorMessage = e.message ?: "")
                 }
             }
         }

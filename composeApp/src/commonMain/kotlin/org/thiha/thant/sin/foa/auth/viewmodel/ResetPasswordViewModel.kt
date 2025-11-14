@@ -18,7 +18,7 @@ class ResetPasswordViewModel : ViewModel() {
     private val _state = MutableStateFlow(AuthState())
     val state = _state.asStateFlow()
 
-    fun onTapResetPassword(email: String, password: String) {
+    fun onTapResetPassword(email: String, password: String, resetPasswordToken: String) {
         _state.update {
             it.copy(uiState = UiState.LOADING)
         }
@@ -28,14 +28,15 @@ class ResetPasswordViewModel : ViewModel() {
                     ForgetPasswordRequestVO(
                         email = email,
                         password = password,
-                    )
+                    ),
+                    resetPasswordToken = resetPasswordToken
                 )
                 _state.update {
                     it.copy(uiState = UiState.SUCCESS)
                 }
             } catch (e: Exception) {
                 _state.update {
-                    it.copy(uiState = UiState.FAIL, errorMessage = e.message)
+                    it.copy(uiState = UiState.FAIL, errorMessage = e.message?:"")
                 }
             }
         }

@@ -182,7 +182,7 @@ fun SignupScreen(
             )
 
             if (authState.uiState == UiState.FAIL &&
-                !authState.errorMessage.isNullOrBlank()
+                authState.errorMessage.isNotBlank()
             ) {
                 Spacer(modifier = Modifier.height(MARGIN_LARGE))
                 AppErrorView(
@@ -206,7 +206,7 @@ fun SignupScreen(
             if (showErrorDialog) {
                 AppDialog(
                     title = SIGNUP_ERROR_TITLE,
-                    message = authState.errorMessage ?: "",
+                    message = authState.errorMessage,
                     confirmText = OK_TEXT,
                     onConfirm = {
                         onTapOKButtonDialog()

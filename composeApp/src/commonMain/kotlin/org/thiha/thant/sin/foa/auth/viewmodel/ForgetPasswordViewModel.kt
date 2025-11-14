@@ -20,21 +20,24 @@ class ForgetPasswordViewModel : ViewModel() {
 
     fun onTapForgetPasswordCheck(email: String) {
         _state.update {
-            it.copy(uiState = UiState.LOADING)
+            it.copy(uiState = UiState.LOADING, email = email)
         }
         viewModelScope.launch {
             try {
-                authRepository.forgetPasswordCheck(
+                val response = authRepository.forgetPasswordCheck(
                     ForgetPasswordRequestVO(
                         email = email,
                     )
                 )
                 _state.update {
-                    it.copy(uiState = UiState.SUCCESS)
+                    it.copy(
+                        uiState = UiState.SUCCESS, resetPasswordToken = response.resetPasswordToken,
+                        email = email
+                    )
                 }
             } catch (e: Exception) {
                 _state.update {
-                    it.copy(uiState = UiState.FAIL, errorMessage = e.message)
+                    it.copy(uiState = UiState.FAIL, errorMessage = e.message ?: "", email = email)
                 }
             }
         }
