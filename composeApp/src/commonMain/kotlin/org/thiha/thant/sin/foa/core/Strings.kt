@@ -151,5 +151,5 @@ const val RESET_PASSWORD_ERROR_TITLE = "Reset Password Fail";
 
 //Route
 const val HOME_ROUTE = "Home";
-const val ORDER_ROUTE = "Order";
+const val ORDER_HISTORY_ROUTE = "Order History";
 const val PROFILE_ROUTE = "Profile";

@@ -1,4 +1,4 @@
-package org.thiha.thant.sin.foa.home.viewmodel
+package org.thiha.thant.sin.foa.order.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,25 +7,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.thiha.thant.sin.foa.core.utils.enums.UiState
-import org.thiha.thant.sin.foa.home.data.HomeRepository
-import org.thiha.thant.sin.foa.home.state.HomeState
+import org.thiha.thant.sin.foa.order.data.OrderRepository
+import org.thiha.thant.sin.foa.order.state.OrderHistoryState
 
-class HomeViewModel : ViewModel() {
-    val homeRepository: HomeRepository = HomeRepository;
+class OrderHistoryViewModel : ViewModel() {
+    val orderRepository: OrderRepository = OrderRepository;
 
-    private val _state = MutableStateFlow(HomeState())
+    private val _state = MutableStateFlow(OrderHistoryState())
     val state = _state.asStateFlow()
 
 
-    fun loadRestaurants() {
+    fun loadOrderHistory() {
         viewModelScope.launch {
             _state.update {
                 it.copy(uiState = UiState.LOADING)
             }
             try {
-                val restaurants = homeRepository.getAllRestaurant();
+                val history = orderRepository.getOrderHistory()
                 _state.update {
-                    it.copy(restaurantList = restaurants, uiState = UiState.SUCCESS)
+                    it.copy(uiState = UiState.SUCCESS, orderHistory = history)
                 }
             } catch (e: Exception) {
                 _state.update {
@@ -36,6 +36,6 @@ class HomeViewModel : ViewModel() {
     }
 
     init {
-        loadRestaurants()
+        loadOrderHistory()
     }
 }

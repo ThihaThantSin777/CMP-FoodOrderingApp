@@ -31,6 +31,7 @@ import org.thiha.thant.sin.foa.home.ui.OrderConfirmScreen
 import org.thiha.thant.sin.foa.home.ui.RestaurantDetailsScreen
 import org.thiha.thant.sin.foa.home.ui.ReviewOrderScreen
 import org.thiha.thant.sin.foa.home.viewmodel.HomeViewModel
+import org.thiha.thant.sin.foa.order.viewmodel.OrderHistoryViewModel
 import org.thiha.thant.sin.foa.profile.ui.AboutScreen
 
 @Composable
@@ -131,6 +132,10 @@ fun App() {
                 val homeViewModel = viewModel {
                     HomeViewModel()
                 }
+
+                val orderHistoryViewModel = viewModel {
+                    OrderHistoryViewModel()
+                }
                 MainRoute(
                     onTapAboutScreen = {
                         navigationController.navigate(NavRoutes.AboutScreen)
@@ -149,6 +154,7 @@ fun App() {
                         navigationController.navigate(NavRoutes.RestaurantDetailsScreen(1))
                     },
                     homeViewModel = homeViewModel,
+                    orderHistoryViewModel = orderHistoryViewModel,
                 )
             }
 

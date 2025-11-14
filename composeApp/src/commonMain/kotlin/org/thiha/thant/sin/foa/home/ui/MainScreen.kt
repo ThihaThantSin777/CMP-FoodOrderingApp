@@ -25,16 +25,19 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.thiha.thant.sin.foa.core.DEFAULT_BOTTOM_NAV_BAR_SIZE
 import org.thiha.thant.sin.foa.core.HOME_ROUTE
-import org.thiha.thant.sin.foa.core.ORDER_ROUTE
+import org.thiha.thant.sin.foa.core.ORDER_HISTORY_ROUTE
 import org.thiha.thant.sin.foa.core.PROFILE_ROUTE
 import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
 import org.thiha.thant.sin.foa.home.viewmodel.HomeViewModel
-import org.thiha.thant.sin.foa.order.ui.OrderScreen
+import org.thiha.thant.sin.foa.order.ui.OrderHistoryRoute
+import org.thiha.thant.sin.foa.order.viewmodel.OrderHistoryViewModel
 import org.thiha.thant.sin.foa.profile.ui.ProfileScreen
 
 @Composable
 fun MainRoute(
-    homeViewModel: HomeViewModel, desireRoute: String = HOME_ROUTE,
+    homeViewModel: HomeViewModel,
+    orderHistoryViewModel: OrderHistoryViewModel,
+    desireRoute: String = HOME_ROUTE,
     onTapAboutScreen: () -> Unit,
     onTapLogout: () -> Unit,
     onTapCart: () -> Unit,
@@ -47,6 +50,7 @@ fun MainRoute(
         onTapCart = onTapCart,
         onTapRestaurant = onTapRestaurant,
         homeViewModel = homeViewModel,
+        orderHistoryViewModel=orderHistoryViewModel,
     )
 }
 
@@ -58,6 +62,7 @@ fun MainScreen(
     onTapCart: () -> Unit,
     onTapRestaurant: () -> Unit,
     homeViewModel: HomeViewModel,
+    orderHistoryViewModel: OrderHistoryViewModel,
 ) {
     var selectedItem by remember {
         mutableStateOf(desireRoute)
@@ -68,7 +73,7 @@ fun MainScreen(
             selectedImage = Res.drawable.home_select_icon,
         ),
         BottomNavItem(
-            label = ORDER_ROUTE,
+            label = ORDER_HISTORY_ROUTE,
             selectedImage = Res.drawable.order_select_icon,
         ),
         BottomNavItem(
@@ -121,8 +126,8 @@ fun MainScreen(
                 )
             }
 
-            ORDER_ROUTE -> {
-                OrderScreen()
+            ORDER_HISTORY_ROUTE -> {
+                OrderHistoryRoute(viewModel = orderHistoryViewModel)
             }
 
             PROFILE_ROUTE -> {
