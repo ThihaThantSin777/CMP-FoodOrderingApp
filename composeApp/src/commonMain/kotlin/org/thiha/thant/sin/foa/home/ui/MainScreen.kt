@@ -31,18 +31,22 @@ import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
 import org.thiha.thant.sin.foa.home.viewmodel.HomeViewModel
 import org.thiha.thant.sin.foa.order.ui.OrderHistoryRoute
 import org.thiha.thant.sin.foa.order.viewmodel.OrderHistoryViewModel
+import org.thiha.thant.sin.foa.profile.ui.ProfileRoute
 import org.thiha.thant.sin.foa.profile.ui.ProfileScreen
+import org.thiha.thant.sin.foa.profile.viewmodel.ProfileViewModel
 
 @Composable
 fun MainRoute(
     homeViewModel: HomeViewModel,
     orderHistoryViewModel: OrderHistoryViewModel,
+    profileViewModel: ProfileViewModel,
     desireRoute: String = HOME_ROUTE,
     onTapAboutScreen: () -> Unit,
     onTapLogout: () -> Unit,
     onTapCart: () -> Unit,
     onTapRestaurant: () -> Unit,
-) {
+
+    ) {
     MainScreen(
         desireRoute = desireRoute,
         onTapAboutScreen = onTapAboutScreen,
@@ -50,7 +54,8 @@ fun MainRoute(
         onTapCart = onTapCart,
         onTapRestaurant = onTapRestaurant,
         homeViewModel = homeViewModel,
-        orderHistoryViewModel=orderHistoryViewModel,
+        orderHistoryViewModel = orderHistoryViewModel,
+        profileViewModel = profileViewModel,
     )
 }
 
@@ -63,6 +68,7 @@ fun MainScreen(
     onTapRestaurant: () -> Unit,
     homeViewModel: HomeViewModel,
     orderHistoryViewModel: OrderHistoryViewModel,
+    profileViewModel: ProfileViewModel,
 ) {
     var selectedItem by remember {
         mutableStateOf(desireRoute)
@@ -131,9 +137,10 @@ fun MainScreen(
             }
 
             PROFILE_ROUTE -> {
-                ProfileScreen(
-                    onTapAboutScreen,
-                    onTapLogout,
+                ProfileRoute(
+                    viewModel = profileViewModel,
+                    onTapAboutScreen = onTapAboutScreen,
+                    onTapLogout = onTapLogout,
                 )
             }
 

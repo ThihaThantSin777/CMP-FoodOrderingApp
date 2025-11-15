@@ -105,9 +105,14 @@ const val CHECK_OUT_INFORMATION_TEXT = "Checkout Information"
 
 const val CHECK_OUT_INFORMATION_DESCRIPTION_TEXT = "Select your delivery and payment details"
 
+const val CART_EMPTY_TITLE_TEXT="Your cart is empty"
 
+const val CART_EMPTY_DESC_TEXT="Add some delicious food to get started."
 
-
+const val LOGOUT_CONFIRM_TITLE = "Logout"
+const val LOGOUT_CONFIRM_MESSAGE = "Are you sure you want to log out?"
+const val YES_TEXT = "Yes"
+const val CANCEL_TEXT = "Cancel"
 
 
 //Error Message Strings
@@ -149,20 +154,27 @@ const val NAME_ON_CARD_VALID_FORMAT_TEXT = "Card name is invalid.";
 
 const val ENTER_ADDRESS_TEXT = "Please enter address.";
 
+
+const val APP_INITIAL_ERROR_TITLE = "App Error";
 const val LOGIN_ERROR_TITLE = "Login Fail";
+
+const val PROFILE_LOGOUT_FAIL_TITLE = "Logout Fail";
 
 const val NEW_INFORMATION_CREATE_FAIL_TITLE = "Information Create Fail";
 
 const val SUBMIT_ORDER_FAIL_TITLE = "Submit Order Fail";
 
-const val ORDER_CONFIRMED_TEXT="Order Confirmed"
+const val ORDER_CONFIRMED_TEXT = "Order Confirmed"
 
-const val ORDER_CONFIRMED_DESC="Your order is confirmed!"
+const val ORDER_CONFIRMED_DESC = "Your order is confirmed!"
 
-const val ORDER_CONFIRMED_SUB_DESC="Your order will be delivered in 30–45 minutes.\nYou can track your order in the Orders tab.";
+const val ORDER_CONFIRMED_SUB_DESC =
+    "Your order will be delivered in 30–45 minutes.\nYou can track your order in the Orders tab.";
 
 const val DELIVERY_ADDRESS_AND_PAYMENT_METHOD_ERROR_TITLE =
     "Fail to Fetch Delivery Address and Payment Method";
+
+const val DELIVERY_ADDRESS_AND_PAYMENT_METHOD_ERROR_DESC="No saved payment methods or delivery addresses found.";
 
 const val SIGNUP_ERROR_TITLE = "Signup Fail";
 

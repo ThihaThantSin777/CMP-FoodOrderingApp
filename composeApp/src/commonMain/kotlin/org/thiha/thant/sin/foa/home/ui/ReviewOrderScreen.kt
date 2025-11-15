@@ -27,6 +27,7 @@ import org.thiha.thant.sin.foa.components.AppNetworkImage
 import org.thiha.thant.sin.foa.components.AppPrimaryButton
 import org.thiha.thant.sin.foa.core.*
 import org.thiha.thant.sin.foa.core.utils.enums.UiState
+import org.thiha.thant.sin.foa.home.data.vos.FoodItemVO
 import org.thiha.thant.sin.foa.home.state.ReviewOrderState
 import org.thiha.thant.sin.foa.home.viewmodel.ReviewOrderViewModel
 
@@ -57,7 +58,7 @@ fun ReviewOrderRoute(
             showErrorDialog = false;
         },
         onConfirmOrder = {
-            // viewModel.onTapConfirmOrder()
+            viewModel.onTapConfirmOrder()
         }
     )
 
@@ -72,27 +73,16 @@ fun ReviewOrderScreen(
     showErrorDialog: Boolean,
     onTapOKButtonDialog: () -> Unit,
 ) {
-    val orderItems = listOf(
-        ReviewItemVM(
-            id = 1,
-            title = "Spicy Chicken Sandwich",
-            quantity = 1,
-            price = 12.99,
-            image = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg"
-        ),
-        ReviewItemVM(
-            id = 2,
-            title = "Fries",
-            quantity = 1,
-            price = 3.99,
-            image = "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg"
-        )
-    )
+    val orderItems: List<FoodItemVO> = state.orderItems
+    val addressDetails = state.deliveryAddressVO?.streetAddress ?: "-"
+    val paymentMethod = state.paymentMethodVO
 
-    val addressTitle = "Home"
-    val addressDetails = "123 Elm Street, Apt 4B"
-    val paymentType = "Credit Card"
-    val maskedCard = "7899 9787 8778"
+    val paymentType = PAYMENT_METHOD_TITLE
+    val maskedCard = paymentMethod?.cardNumber
+        ?.takeLast(4)
+        ?.let { "**** **** **** $it" }
+        ?: "-"
+
     val total = orderItems.sumOf { it.price * it.quantity }
 
     Scaffold(
@@ -125,6 +115,7 @@ fun ReviewOrderScreen(
         if (state.uiState == UiState.LOADING) {
             AppLoadingDialog()
         }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -153,9 +144,7 @@ fun ReviewOrderScreen(
             )
             Spacer(Modifier.height(MARGIN_MEDIUM_3))
             Column {
-                Text(addressTitle, fontWeight = FontWeight.Medium)
-                Spacer(Modifier.height(MARGIN_SMALL))
-                Text(addressDetails, color = SECONDARY_COLOR)
+                Text(addressDetails, fontWeight = FontWeight.Medium)
             }
 
             Spacer(Modifier.height(MARGIN_MEDIUM_3))
@@ -217,12 +206,8 @@ fun ReviewOrderScreen(
                     title = SUBMIT_ORDER_FAIL_TITLE,
                     message = state.errorMessage,
                     confirmText = OK_TEXT,
-                    onConfirm = {
-                        onTapOKButtonDialog()
-                    },
-                    onDismissRequest = {
-                        onTapOKButtonDialog()
-                    },
+                    onConfirm = { onTapOKButtonDialog() },
+                    onDismissRequest = { onTapOKButtonDialog() },
                 )
             }
         }
@@ -230,7 +215,7 @@ fun ReviewOrderScreen(
 }
 
 @Composable
-fun ReviewOrderRow(item: ReviewItemVM) {
+fun ReviewOrderRow(item: FoodItemVO) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -238,7 +223,7 @@ fun ReviewOrderRow(item: ReviewItemVM) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         AppNetworkImage(
-            imageUrl = item.image,
+            imageUrl = item.imageUrl,
             modifier = Modifier
                 .size(REVIEW_ORDER_IMAGE_SIZE),
             shape = RoundedCornerShape(MARGIN_CARD_MEDIUM_2)
@@ -247,7 +232,7 @@ fun ReviewOrderRow(item: ReviewItemVM) {
         Spacer(Modifier.width(MARGIN_MEDIUM_2))
 
         Column(Modifier.weight(1f)) {
-            Text(item.title, fontWeight = FontWeight.Medium)
+            Text(item.name, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(MARGIN_SMALL))
             Text("${item.quantity}×", color = SECONDARY_COLOR)
         }
@@ -258,12 +243,3 @@ fun ReviewOrderRow(item: ReviewItemVM) {
         )
     }
 }
-
-
-data class ReviewItemVM(
-    val id: Int,
-    val title: String,
-    val quantity: Int,
-    val price: Double,
-    val image: String
-)

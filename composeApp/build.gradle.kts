@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ksp)
 
     kotlin("plugin.serialization") version "2.2.21"
 }
@@ -52,6 +53,10 @@ kotlin {
             implementation(libs.bundles.coil)
 
             implementation(libs.kotlinx.datetime)
+
+            implementation(libs.androidx.room.runtime)
+
+            implementation(libs.sqlite.bundled)
         }
 
         nativeMain.dependencies {
@@ -92,5 +97,5 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    ksp(libs.androidx.room.compiler)
 }
-

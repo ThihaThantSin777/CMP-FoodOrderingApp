@@ -39,6 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import org.thiha.thant.sin.foa.components.AppErrorView
 import org.thiha.thant.sin.foa.components.AppLoadingDialog
 import org.thiha.thant.sin.foa.components.AppNetworkImage
@@ -58,19 +60,18 @@ import org.thiha.thant.sin.foa.core.MARGIN_MEDIUM_3
 import org.thiha.thant.sin.foa.core.MARGIN_SMALL
 import org.thiha.thant.sin.foa.core.MENU_IMAGE_HEIGHT
 import org.thiha.thant.sin.foa.core.MENU_IMAGE_WIDTH
+import org.thiha.thant.sin.foa.core.PRIMARY_COLOR
+import org.thiha.thant.sin.foa.core.RESTAURANT_ITEM_PRICE_HEIGHT
+import org.thiha.thant.sin.foa.core.RESTAURANT_ITEM_PRICE_WIDTH
+import org.thiha.thant.sin.foa.core.RESTAURANT_NOT_FOUNT_TEXT
 import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
 import org.thiha.thant.sin.foa.core.TEXT_REGULAR
 import org.thiha.thant.sin.foa.core.TEXT_SMALL
 import org.thiha.thant.sin.foa.core.VIEW_MY_CART_TEXT
 import org.thiha.thant.sin.foa.core.utils.enums.UiState
+import org.thiha.thant.sin.foa.home.data.vos.FoodItemVO
 import org.thiha.thant.sin.foa.home.state.RestaurantDetailsState
 import org.thiha.thant.sin.foa.home.viewmodel.RestaurantDetailsViewModel
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import org.thiha.thant.sin.foa.core.PRIMARY_COLOR
-import org.thiha.thant.sin.foa.core.RESTAURANT_ITEM_PRICE_HEIGHT
-import org.thiha.thant.sin.foa.core.RESTAURANT_ITEM_PRICE_WIDTH
-import org.thiha.thant.sin.foa.core.RESTAURANT_NOT_FOUNT_TEXT
 
 @Composable
 fun RestaurantDetailsRoute(
@@ -86,6 +87,9 @@ fun RestaurantDetailsRoute(
         onTapBack = onTapBack,
         onTapRetry = {
             viewModel.loadRestaurantByID()
+        },
+        onTapAddItem = { item, isUpdate ->
+            viewModel.onSaveFoodItem(item, isUpdate)
         }
     )
 }
@@ -97,6 +101,7 @@ fun RestaurantDetailsScreen(
     onTapViewMyCart: () -> Unit,
     onTapBack: () -> Unit,
     onTapRetry: () -> Unit,
+    onTapAddItem: (FoodItemVO, isUpdate: Boolean) -> Unit,
 ) {
     val restaurant = restaurantDetailsState.restaurantDetails
 
@@ -111,8 +116,8 @@ fun RestaurantDetailsScreen(
         mutableStateOf(toolBars.first())
     }
 
-    var cart by remember { mutableStateOf<Map<Long, Int>>(emptyMap()) }
-    val cartCount = cart.values.sum()
+    var cart by remember { mutableStateOf<Map<Long, FoodItemVO>>(emptyMap()) }
+    val cartCount = cart.values.sumOf { it.quantity }
 
     Scaffold(
         topBar = {
@@ -120,7 +125,10 @@ fun RestaurantDetailsScreen(
                 title = { Text(restaurant?.name ?: "") },
                 navigationIcon = {
                     IconButton(onClick = { onTapBack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null
+                        )
                     }
                 }
             )
@@ -186,6 +194,7 @@ fun RestaurantDetailsScreen(
                         .padding(inner)
                 ) {
 
+                    // Restaurant image
                     item {
                         AppNetworkImage(
                             modifier = Modifier
@@ -196,6 +205,7 @@ fun RestaurantDetailsScreen(
                         )
                     }
 
+                    // Tabs
                     item {
                         LazyRow(
                             modifier = Modifier
@@ -216,15 +226,15 @@ fun RestaurantDetailsScreen(
                         HorizontalDivider()
                     }
 
-
                     item { Spacer(Modifier.height(MARGIN_MEDIUM_2)) }
+
                     item {
                         SectionHeader(
                             text = selectedCategory?.name ?: "",
                         )
                     }
 
-
+                    // Menu items
                     items(foodItems) { food ->
                         val vm = MenuItemVM(
                             id = food.id,
@@ -235,13 +245,24 @@ fun RestaurantDetailsScreen(
                             image = food.imageUrl
                         )
 
+                        val existingCartItem = cart[vm.id]
+                        val count = existingCartItem?.quantity ?: 0
+
                         MenuRow(
                             data = vm,
-                            count = cart[vm.id] ?: 0,
+                            count = count,
                             onAdd = {
+                                val existing = cart[vm.id]
+                                val newQty = (existing?.quantity ?: 0) + 1
+
+                                val updatedFood = food.copy(quantity = newQty)
+
                                 cart = cart.toMutableMap().apply {
-                                    put(vm.id, (get(vm.id) ?: 0) + 1)
+                                    put(vm.id, updatedFood)
                                 }
+
+                                val isUpdate = existing != null
+                                onTapAddItem(updatedFood, isUpdate)
                             }
                         )
                     }
@@ -359,7 +380,9 @@ fun MenuRow(
 fun PriceChip(price: Double) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.width(RESTAURANT_ITEM_PRICE_WIDTH).height(RESTAURANT_ITEM_PRICE_HEIGHT)
+        modifier = Modifier
+            .width(RESTAURANT_ITEM_PRICE_WIDTH)
+            .height(RESTAURANT_ITEM_PRICE_HEIGHT)
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
                 shape = RoundedCornerShape(MARGIN_MEDIUM_3)
