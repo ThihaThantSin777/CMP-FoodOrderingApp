@@ -404,7 +404,6 @@ fun PaymentAndAddressDialog(
                     .verticalScroll(rememberScrollState())
             ) {
 
-                // ───── Delivery address section ─────
                 SectionHeader(
                     icon = Icons.Outlined.LocationOn,
                     title = CARD_DELIVERY_ADDRESS_TEXT
@@ -423,7 +422,6 @@ fun PaymentAndAddressDialog(
                             address = address,
                             isSelected = selectedAddress?.id == address.id,
                             onClick = {
-                                // Just select, DO NOT close / confirm
                                 selectedAddress = address
                             }
                         )
@@ -435,7 +433,6 @@ fun PaymentAndAddressDialog(
 
                 Spacer(Modifier.height(MARGIN_LARGE))
 
-                // ───── Payment method section ─────
                 SectionHeader(
                     icon = Icons.Outlined.Create,
                     title = PAYMENT_METHODS_TITLE
@@ -454,7 +451,6 @@ fun PaymentAndAddressDialog(
                             paymentMethod = pm,
                             isSelected = selectedPaymentMethod?.id == pm.id,
                             onClick = {
-                                // Just select, DO NOT close / confirm
                                 selectedPaymentMethod = pm
                             }
                         )
@@ -474,11 +470,10 @@ fun PaymentAndAddressDialog(
                     val pm = selectedPaymentMethod
                     val address = selectedAddress
                     if (pm != null && address != null) {
-                        // Now actually save + continue
                         onConfirm(pm, address)
                         onTapPaymentMethodAndDeliveryAddressContinue()
                     } else {
-                        // Shouldn’t happen because button is disabled, but just in case
+
                         onDismissRequest()
                     }
                 },
@@ -518,7 +513,6 @@ fun PaymentAndAddressDialog(
 }
 
 
-// ───────────────────────────── Dialog helpers ─────────────────────────────
 
 @Composable
 private fun SectionHeader(icon: ImageVector, title: String) {

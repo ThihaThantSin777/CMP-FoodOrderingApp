@@ -74,7 +74,7 @@ fun ProfileRoute(
             profileState.auth == null &&
             !profileState.isErrorFromOnTapLogout
         ) {
-            // Logout finished successfully -> navigate out
+
             onTapLogout()
         }
 
@@ -226,7 +226,6 @@ fun ProfileSession(
             },
         )
 
-        // 🔹 Logout Confirmation
         if (showLogoutDialog) {
             LogoutConfirmationDialog(
                 onConfirmLogout = onConfirmLogout,
@@ -234,7 +233,6 @@ fun ProfileSession(
             )
         }
 
-        // 🔹 Logout Fail dialog (existing)
         if (showErrorDialog) {
             AppDialog(
                 title = PROFILE_LOGOUT_FAIL_TITLE,

@@ -18,7 +18,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import foodorderingapp.composeapp.generated.resources.Res
 import foodorderingapp.composeapp.generated.resources.shop_cart_icon
 import org.jetbrains.compose.resources.painterResource
+import org.thiha.thant.sin.foa.components.AppDialog
 import org.thiha.thant.sin.foa.components.AppErrorView
 import org.thiha.thant.sin.foa.components.AppLoadingDialog
 import org.thiha.thant.sin.foa.components.AppNetworkImage
@@ -40,7 +45,10 @@ import org.thiha.thant.sin.foa.core.MARGIN_MEDIUM_3
 import org.thiha.thant.sin.foa.core.MARGIN_SMALL
 import org.thiha.thant.sin.foa.core.ORDER_BUTTON_TEXT
 import org.thiha.thant.sin.foa.core.RESTAURANT_NEAR_YOU_TITLE
+import org.thiha.thant.sin.foa.core.RE_LOGIN_TEXT
 import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
+import org.thiha.thant.sin.foa.core.SESSION_EXPIRED_DESC
+import org.thiha.thant.sin.foa.core.SESSION_EXPIRED_TITLE
 import org.thiha.thant.sin.foa.core.TEXT_LARGE
 import org.thiha.thant.sin.foa.core.TEXT_REGULAR_2X
 import org.thiha.thant.sin.foa.core.TEXT_REGULAR_3X
@@ -50,46 +58,68 @@ import org.thiha.thant.sin.foa.home.state.HomeState
 import org.thiha.thant.sin.foa.home.viewmodel.HomeViewModel
 
 @Composable
-fun HomeRoute(viewModel: HomeViewModel, onTapCart: () -> Unit, onTapRestaurant: () -> Unit) {
-
+fun HomeRoute(
+    viewModel: HomeViewModel,
+    onTapCart: () -> Unit,
+    onTapRestaurant: () -> Unit,
+    onTokenExpired: () -> Unit = {},
+) {
     val homeState by viewModel.state.collectAsStateWithLifecycle()
-    HomeScreen(
-        onTapRestaurant = onTapRestaurant,
-        onTapCart = onTapCart,
+    var showTokenExpireDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(homeState.isTokenExpire) {
+        if (homeState.isTokenExpire) {
+            showTokenExpireDialog = true
+        }
+    }
+
+    ScaffoldWrapper(
         state = homeState,
-        onTapRetry = {
-            viewModel.loadRestaurants()
-        })
+        onTapCart = onTapCart,
+        onTapRestaurant = onTapRestaurant,
+        onTapRetry = { viewModel.loadRestaurants() },
+        showTokenExpireDialog = showTokenExpireDialog,
+        onDismissTokenExpireDialog = {
+            showTokenExpireDialog = false
+            viewModel.onTapLogout()
+            onTokenExpired()
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+private fun ScaffoldWrapper(
     state: HomeState,
     onTapCart: () -> Unit,
     onTapRestaurant: () -> Unit,
     onTapRetry: () -> Unit,
+    showTokenExpireDialog: Boolean,
+    onDismissTokenExpireDialog: () -> Unit,
 ) {
-    Scaffold(topBar = {
-        TopAppBar(
-            title = {
-                Text(
-                    RESTAURANT_NEAR_YOU_TITLE,
-                    fontSize = TEXT_LARGE,
-                    fontWeight = FontWeight.W700
-                )
-            },
-            actions = {
-                Image(
-                    painterResource(Res.drawable.shop_cart_icon),
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = MARGIN_CARD_MEDIUM_2).clickable {
-                        onTapCart()
-                    }
-                )
-            }
-        )
-    }) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        RESTAURANT_NEAR_YOU_TITLE,
+                        fontSize = TEXT_LARGE,
+                        fontWeight = FontWeight.W700
+                    )
+                },
+                actions = {
+                    Image(
+                        painterResource(Res.drawable.shop_cart_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = MARGIN_CARD_MEDIUM_2)
+                            .clickable { onTapCart() }
+                    )
+                }
+            )
+        }
+    ) { paddingValues ->
+
         when (state.uiState) {
             UiState.LOADING -> {
                 AppLoadingDialog()
@@ -102,16 +132,14 @@ fun HomeScreen(
             }
 
             else -> {
-                val restaurantList = state.restaurantList;
+                val restaurantList = state.restaurantList
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it)
+                        .padding(paddingValues)
                 ) {
                     if (restaurantList.isNotEmpty()) {
-
                         items(restaurantList.size) { index ->
-
                             RestaurantsNearYouCard(
                                 restaurant = restaurantList[index],
                                 onTapRestaurant = onTapRestaurant,
@@ -133,9 +161,18 @@ fun HomeScreen(
             }
         }
 
+
+        if (showTokenExpireDialog) {
+            AppDialog(
+                title = SESSION_EXPIRED_TITLE,
+                message = SESSION_EXPIRED_DESC,
+                confirmText = RE_LOGIN_TEXT,
+                onConfirm = { onDismissTokenExpireDialog() },
+                onDismissRequest = { onDismissTokenExpireDialog() },
+            )
+        }
     }
 }
-
 
 @Composable
 fun RestaurantsNearYouCard(restaurant: RestaurantVO, onTapRestaurant: () -> Unit) {
@@ -144,48 +181,38 @@ fun RestaurantsNearYouCard(restaurant: RestaurantVO, onTapRestaurant: () -> Unit
             .padding(horizontal = MARGIN_CARD_MEDIUM_2),
     ) {
         AppNetworkImage(
-            modifier = Modifier.fillMaxWidth().height(DEFAULT_RESTAURANT_IMAGE_HEIGHT),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(DEFAULT_RESTAURANT_IMAGE_HEIGHT),
             imageUrl = restaurant.imageUrl,
             shape = RoundedCornerShape(MARGIN_MEDIUM_3),
         )
-        Spacer(
-            modifier = Modifier.height(MARGIN_MEDIUM_3),
-        )
+        Spacer(modifier = Modifier.height(MARGIN_MEDIUM_3))
         Text(restaurant.name, fontWeight = FontWeight.W700, fontSize = TEXT_REGULAR_3X)
-        Spacer(
-            modifier = Modifier.height(MARGIN_SMALL),
-        )
+        Spacer(modifier = Modifier.height(MARGIN_SMALL))
         Text(
-            restaurant.restaurantCategories.map {
-                it.name
-            }.toList().joinToString(","),
+            restaurant.restaurantCategories.joinToString(",") { it.name },
             fontWeight = FontWeight.W400,
             fontSize = TEXT_REGULAR_2X,
             color = SECONDARY_COLOR,
         )
-        Spacer(
-            modifier = Modifier.height(MARGIN_SMALL),
-        )
+        Spacer(modifier = Modifier.height(MARGIN_SMALL))
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                "${restaurant.averageRating} ⭐\uFE0F (3,300+)",
+                "${restaurant.averageRating} ⭐️ (3,300+)",
                 fontWeight = FontWeight.W400,
                 fontSize = TEXT_REGULAR_2X,
                 color = SECONDARY_COLOR,
             )
-            Spacer(
-                modifier = Modifier.weight(1F),
-            )
+            Spacer(modifier = Modifier.weight(1f))
             AppPrimaryButton(
-                modifier = Modifier.width(HOME_PAGE_ORDER_BUTTON_WIDTH).height(
-                    HOME_PAGE_ORDER_BUTTON_HEIGHT
-                ),
+                modifier = Modifier
+                    .width(HOME_PAGE_ORDER_BUTTON_WIDTH)
+                    .height(HOME_PAGE_ORDER_BUTTON_HEIGHT),
                 text = ORDER_BUTTON_TEXT,
-                onClick = {
-                    onTapRestaurant()
-                }
+                onClick = { onTapRestaurant() }
             )
         }
     }

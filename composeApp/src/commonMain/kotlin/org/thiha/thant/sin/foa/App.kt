@@ -196,6 +196,13 @@ fun App(databaseBuilder: RoomDatabase.Builder<AppDatabase>) {
                                 }
                             }
                         },
+                        onTokenExpired = {
+                            navigationController.navigate(NavRoutes.LoginScreen) {
+                                popUpTo(navigationController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                            }
+                        },
                         onTapCart = {
                             navigationController.navigate(NavRoutes.CartScreen)
                         },
@@ -312,7 +319,7 @@ fun App(databaseBuilder: RoomDatabase.Builder<AppDatabase>) {
 sealed class NavRoutes {
 
 
-    //Auth
+   // Auth
     @Serializable
     object LoginScreen
 
@@ -325,7 +332,7 @@ sealed class NavRoutes {
     @Serializable
     data class ResetPasswordScreen(val email: String, val resetPasswordToken: String)
 
-    //Main
+  //  Main
     @Serializable
     object MainScreen
 

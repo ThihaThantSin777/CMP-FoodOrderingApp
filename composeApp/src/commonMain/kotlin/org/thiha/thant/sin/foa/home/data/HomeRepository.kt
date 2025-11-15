@@ -52,6 +52,9 @@ object HomeRepository {
     suspend fun submitOrder(createOrderRequestVo: CreateOrderRequestVO) {
         return withContext(Dispatchers.IO) {
             val response = apiService.submitOrder(createOrderRequestVo)
+            appDatabase.deliAddressDao().clearAll();
+            appDatabase.paymentMethodDao().clearAll();
+            appDatabase.foodItemDao().clearAll();
             return@withContext response;
         }
     }

@@ -105,9 +105,14 @@ const val CHECK_OUT_INFORMATION_TEXT = "Checkout Information"
 
 const val CHECK_OUT_INFORMATION_DESCRIPTION_TEXT = "Select your delivery and payment details"
 
-const val CART_EMPTY_TITLE_TEXT="Your cart is empty"
+const val CART_EMPTY_TITLE_TEXT = "Your cart is empty"
 
-const val CART_EMPTY_DESC_TEXT="Add some delicious food to get started."
+const val CART_EMPTY_DESC_TEXT = "Add some delicious food to get started."
+
+const val SUBMIT_ORDER_SUCCESS_TITLE = "Thank you for your order."
+
+const val ORDER_SUBMITTED_SUCCESSFULLY_TEXT = "Your order is successfully submitted."
+
 
 const val LOGOUT_CONFIRM_TITLE = "Logout"
 const val LOGOUT_CONFIRM_MESSAGE = "Are you sure you want to log out?"
@@ -174,7 +179,8 @@ const val ORDER_CONFIRMED_SUB_DESC =
 const val DELIVERY_ADDRESS_AND_PAYMENT_METHOD_ERROR_TITLE =
     "Fail to Fetch Delivery Address and Payment Method";
 
-const val DELIVERY_ADDRESS_AND_PAYMENT_METHOD_ERROR_DESC="No saved payment methods or delivery addresses found.";
+const val DELIVERY_ADDRESS_AND_PAYMENT_METHOD_ERROR_DESC =
+    "No saved payment methods or delivery addresses found.";
 
 const val SIGNUP_ERROR_TITLE = "Signup Fail";
 
@@ -187,6 +193,14 @@ const val RESTAURANT_NOT_FOUNT_TEXT = "Restaurant not found"
 const val PAYMENT_METHOD_NO_SAVE_TEXT = "No saved payment methods.";
 
 const val DELIVERY_ADDRESS_NO_SAVE_TEXT = "No saved delivery addresses.";
+
+const val NOT_AUTHORIZED_KEY = "not authorized";
+
+const val  SESSION_EXPIRED_TITLE = "Session expired";
+
+const val  SESSION_EXPIRED_DESC = "Your session has expired. Please log in again.";
+
+const val RE_LOGIN_TEXT = "Re-login";
 
 
 //Route

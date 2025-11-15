@@ -39,14 +39,19 @@ fun ReviewOrderRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showErrorDialog by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.uiState) {
-        if (state.uiState == UiState.SUCCESS) {
-            onConfirmOrder();
-        }
+        when (state.uiState) {
+            UiState.SUCCESS -> {
+                showSuccessDialog = true
+            }
 
-        if (state.uiState == UiState.FAIL) {
-            showErrorDialog = true
+            UiState.FAIL -> {
+                showErrorDialog = true
+            }
+
+            else -> Unit
         }
     }
 
@@ -54,15 +59,20 @@ fun ReviewOrderRoute(
         onBack = onBack,
         state = state,
         showErrorDialog = showErrorDialog,
-        onTapOKButtonDialog = {
-            showErrorDialog = false;
+        showSuccessDialog = showSuccessDialog,
+        onTapOKButtonErrorDialog = {
+            showErrorDialog = false
+        },
+        onTapOKButtonSuccessDialog = {
+            showSuccessDialog = false
+            onConfirmOrder()
         },
         onConfirmOrder = {
             viewModel.onTapConfirmOrder()
         }
     )
-
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +81,9 @@ fun ReviewOrderScreen(
     onConfirmOrder: () -> Unit = {},
     state: ReviewOrderState,
     showErrorDialog: Boolean,
-    onTapOKButtonDialog: () -> Unit,
+    showSuccessDialog: Boolean,
+    onTapOKButtonErrorDialog: () -> Unit,
+    onTapOKButtonSuccessDialog: () -> Unit,
 ) {
     val orderItems: List<FoodItemVO> = state.orderItems
     val addressDetails = state.deliveryAddressVO?.streetAddress ?: "-"
@@ -206,8 +218,18 @@ fun ReviewOrderScreen(
                     title = SUBMIT_ORDER_FAIL_TITLE,
                     message = state.errorMessage,
                     confirmText = OK_TEXT,
-                    onConfirm = { onTapOKButtonDialog() },
-                    onDismissRequest = { onTapOKButtonDialog() },
+                    onConfirm = { onTapOKButtonErrorDialog() },
+                    onDismissRequest = { onTapOKButtonErrorDialog() },
+                )
+            }
+
+            if (showSuccessDialog) {
+                AppDialog(
+                    title = SUBMIT_ORDER_SUCCESS_TITLE,
+                    message = ORDER_SUBMITTED_SUCCESSFULLY_TEXT,
+                    confirmText = OK_TEXT,
+                    onConfirm = { onTapOKButtonSuccessDialog() },
+                    onDismissRequest = { onTapOKButtonSuccessDialog() },
                 )
             }
         }

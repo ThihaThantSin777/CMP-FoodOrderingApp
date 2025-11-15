@@ -3,7 +3,7 @@ package org.thiha.thant.sin.foa.core
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Dimens
+ //Dimens
 val MARGIN_XSMALL = 2.dp;
 val MARGIN_SMALL = 4.dp;
 val MARGIN_MEDIUM = 8.dp;

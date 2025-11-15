@@ -45,6 +45,7 @@ fun MainRoute(
     onTapLogout: () -> Unit,
     onTapCart: () -> Unit,
     onTapRestaurant: () -> Unit,
+    onTokenExpired: () -> Unit = {},
 
     ) {
     MainScreen(
@@ -69,6 +70,7 @@ fun MainScreen(
     homeViewModel: HomeViewModel,
     orderHistoryViewModel: OrderHistoryViewModel,
     profileViewModel: ProfileViewModel,
+    onTokenExpired: () -> Unit = {},
 ) {
     var selectedItem by remember {
         mutableStateOf(desireRoute)
@@ -128,7 +130,8 @@ fun MainScreen(
                 HomeRoute(
                     viewModel = homeViewModel,
                     onTapCart = onTapCart,
-                    onTapRestaurant = onTapRestaurant
+                    onTapRestaurant = onTapRestaurant,
+                    onTokenExpired=onTokenExpired,
                 )
             }
 
@@ -148,7 +151,8 @@ fun MainScreen(
                 HomeRoute(
                     viewModel = homeViewModel,
                     onTapCart = onTapCart,
-                    onTapRestaurant = onTapRestaurant
+                    onTapRestaurant = onTapRestaurant,
+                    onTokenExpired=onTokenExpired,
                 )
             }
         }

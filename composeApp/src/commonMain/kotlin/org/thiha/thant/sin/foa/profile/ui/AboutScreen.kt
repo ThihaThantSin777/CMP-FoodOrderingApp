@@ -68,13 +68,12 @@ fun AboutScreen(
 
             item { Spacer(Modifier.height(28.dp)) }
 
-            // Company Information
+
             item {
                 SectionTitle("Company Information")
                 Spacer(Modifier.height(16.dp))
 
                 Row  (Modifier.fillMaxWidth()) {
-                    // Left column
                     Column (
                         modifier = Modifier
                             .weight(1f)
@@ -88,7 +87,6 @@ fun AboutScreen(
 
                     Spacer(Modifier.width(20.dp))
 
-                    // Right column
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -103,7 +101,6 @@ fun AboutScreen(
 
                 Spacer(Modifier.height(22.dp))
 
-                // Full-width field with divider above (Headquarters)
                 Column {
                     HorizontalDivider(color = dividerColor)
                     Spacer(Modifier.height(12.dp))
@@ -115,7 +112,7 @@ fun AboutScreen(
 
             item { Spacer(Modifier.height(28.dp)) }
 
-            // Contact Us
+
             item {
                 SectionTitle("Contact Us")
                 Spacer(Modifier.height(16.dp))

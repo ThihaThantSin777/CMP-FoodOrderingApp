@@ -88,7 +88,7 @@ fun CheckoutScreen(
     var address by remember { mutableStateOf("") }
     var saveForFuture by remember { mutableStateOf(false) }
 
-    // error messages (empty = no error)
+
     var cardErr by remember { mutableStateOf("") }
     var expErr by remember { mutableStateOf("") }
     var cvvErr by remember { mutableStateOf("") }
@@ -146,7 +146,6 @@ fun CheckoutScreen(
                 .padding(horizontal = MARGIN_MEDIUM_3)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Payment Details
             Text(
                 PAYMENT_DETAILS_TITLE,
                 fontWeight = FontWeight.SemiBold,
@@ -211,7 +210,6 @@ fun CheckoutScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Delivery Address
             Spacer(Modifier.height(MARGIN_MEDIUM_3))
             Text(
                 CARD_DELIVERY_ADDRESS_TEXT,

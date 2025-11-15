@@ -194,7 +194,7 @@ fun RestaurantDetailsScreen(
                         .padding(inner)
                 ) {
 
-                    // Restaurant image
+
                     item {
                         AppNetworkImage(
                             modifier = Modifier
@@ -205,7 +205,6 @@ fun RestaurantDetailsScreen(
                         )
                     }
 
-                    // Tabs
                     item {
                         LazyRow(
                             modifier = Modifier
@@ -234,7 +233,6 @@ fun RestaurantDetailsScreen(
                         )
                     }
 
-                    // Menu items
                     items(foodItems) { food ->
                         val vm = MenuItemVM(
                             id = food.id,
