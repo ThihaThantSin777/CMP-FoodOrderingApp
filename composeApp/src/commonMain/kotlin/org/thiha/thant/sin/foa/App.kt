@@ -24,6 +24,7 @@ import org.thiha.thant.sin.foa.auth.viewmodel.LoginViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.ResetPasswordViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.SignupViewModel
 import org.thiha.thant.sin.foa.core.persistence.AppDatabase
+import org.thiha.thant.sin.foa.core.persistence.AppDatabaseProvider
 import org.thiha.thant.sin.foa.home.ui.CartRoute
 import org.thiha.thant.sin.foa.home.ui.CheckoutRoute
 import org.thiha.thant.sin.foa.home.ui.MainRoute
@@ -41,7 +42,7 @@ import org.thiha.thant.sin.foa.profile.ui.AboutScreen
 @Composable
 @Preview
 fun App(databaseBuilder: RoomDatabase.Builder<AppDatabase>) {
-
+    AppDatabaseProvider.initializeDatabase(databaseBuilder)
     val navigationController = rememberNavController()
     val focusManager = LocalFocusManager.current;
     val interactionSource = remember { MutableInteractionSource() }

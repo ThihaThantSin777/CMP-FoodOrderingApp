@@ -11,10 +11,11 @@ import org.thiha.thant.sin.foa.auth.data.vos.ForgetPasswordVO
 import org.thiha.thant.sin.foa.auth.data.vos.RegisterRequestVO
 import org.thiha.thant.sin.foa.auth.network.api_service.AuthApiService
 import org.thiha.thant.sin.foa.auth.network.api_service.impl.AuthApiServiceImpl
+import org.thiha.thant.sin.foa.core.persistence.AppDatabaseProvider
 
 object AuthRepository {
     val apiService: AuthApiService = AuthApiServiceImpl;
-
+    val appDatabase = AppDatabaseProvider.appDatabase
     suspend fun login(loginRequestVO: LoginRequestVO): AuthVO {
         return withContext(Dispatchers.IO) {
             val response = apiService.login(loginRequestVO);
