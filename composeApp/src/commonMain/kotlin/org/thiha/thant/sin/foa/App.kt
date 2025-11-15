@@ -12,28 +12,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import androidx.room.RoomDatabase
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.thiha.thant.sin.foa.auth.ui.ForgetPasswordRoute
-import org.thiha.thant.sin.foa.auth.ui.ForgetPasswordScreen
 import org.thiha.thant.sin.foa.auth.ui.LoginRoute
 import org.thiha.thant.sin.foa.auth.ui.ResetPasswordRoute
-import org.thiha.thant.sin.foa.auth.ui.ResetPasswordScreen
 import org.thiha.thant.sin.foa.auth.ui.SignupRoute
 import org.thiha.thant.sin.foa.auth.viewmodel.ForgetPasswordViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.LoginViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.ResetPasswordViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.SignupViewModel
+import org.thiha.thant.sin.foa.core.persistence.AppDatabase
 import org.thiha.thant.sin.foa.home.ui.CartRoute
-import org.thiha.thant.sin.foa.home.ui.CartScreen
 import org.thiha.thant.sin.foa.home.ui.CheckoutRoute
-import org.thiha.thant.sin.foa.home.ui.CheckoutScreen
 import org.thiha.thant.sin.foa.home.ui.MainRoute
 import org.thiha.thant.sin.foa.home.ui.OrderConfirmScreen
 import org.thiha.thant.sin.foa.home.ui.RestaurantDetailsRoute
-import org.thiha.thant.sin.foa.home.ui.RestaurantDetailsScreen
 import org.thiha.thant.sin.foa.home.ui.ReviewOrderRoute
-import org.thiha.thant.sin.foa.home.ui.ReviewOrderScreen
 import org.thiha.thant.sin.foa.home.viewmodel.CartViewModel
 import org.thiha.thant.sin.foa.home.viewmodel.CheckOutViewModel
 import org.thiha.thant.sin.foa.home.viewmodel.HomeViewModel
@@ -44,7 +40,7 @@ import org.thiha.thant.sin.foa.profile.ui.AboutScreen
 
 @Composable
 @Preview
-fun App() {
+fun App(databaseBuilder: RoomDatabase.Builder<AppDatabase>) {
 
     val navigationController = rememberNavController()
     val focusManager = LocalFocusManager.current;

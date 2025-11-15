@@ -19,6 +19,8 @@ kotlinxSerializationJson = "1.9.0"
 materialIconsCore = "1.7.3"
 navigationCompose = "2.9.0-beta03"
 ktor = "3.2.3"
+room = "2.7.2"
+sqlite = "2.5.2"
 
 [libraries]
 androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
@@ -47,6 +49,11 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+
 
 
 [bundles]

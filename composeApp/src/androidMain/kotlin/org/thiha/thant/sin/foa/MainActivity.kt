@@ -6,14 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import org.thiha.thant.sin.foa.core.persistence.getDatabaseBuilderAndroid
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
+        val databaseBuilder = getDatabaseBuilderAndroid(this)
         setContent {
-            App()
+            App(databaseBuilder)
         }
     }
 }

@@ -52,6 +52,10 @@ kotlin {
             implementation(libs.bundles.coil)
 
             implementation(libs.kotlinx.datetime)
+
+            implementation(libs.androidx.room.runtime)
+
+            implementation(libs.sqlite.bundled)
         }
 
         nativeMain.dependencies {
