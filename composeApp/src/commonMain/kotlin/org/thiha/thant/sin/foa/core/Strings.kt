@@ -5,7 +5,7 @@ const val WELCOME_BACK_TITLE_TEXT = "Welcome back";
 const val EMAIL_HINT_TEXT = "Email";
 const val PASSWORD_HINT_TEXT = "Password";
 
-const val CONFIRM_PASSWORD_HINT_TEXT = "Password";
+const val CONFIRM_PASSWORD_HINT_TEXT = "Confirm Password";
 const val FORGET_PASSWORD_TEXT = "Forget Password?";
 const val LOGIN_TEXT = "Login";
 const val DONT_HAVE_ACCOUNT_TEXT = "Don't have an account";
@@ -70,27 +70,43 @@ const val CARD_EXPIRY_HINT_TEXT = "MM/YY";
 
 const val CARD_CVC_HINT_TEXT = "CVV";
 
-const val CARD_NAME_ON_CARD_HINT_TEXT="Name on Card";
+const val CARD_NAME_ON_CARD_HINT_TEXT = "Name on Card";
 
-const val CARD_DELIVERY_ADDRESS_TEXT="Delivery Address";
+const val CARD_DELIVERY_ADDRESS_TEXT = "Delivery Address";
 
-const val CARD_DELIVERY_ADDRESS_HINT_TEXT="Full Address";
+const val CARD_DELIVERY_ADDRESS_HINT_TEXT = "Full Address";
 
-const val SAVE_CAR_TEXT="Save for future use"
+const val SAVE_CAR_TEXT = "Save for future use"
 
-const val REVIEW_ORDER_TITLE="Review Order"
+const val REVIEW_ORDER_TITLE = "Review Order"
 
-const val CONFIRM_ORDER_TITLE="Confirm Order"
+const val CONFIRM_ORDER_TITLE = "Confirm Order"
 
-const val ORDER_SUMMARY_TITLE="Order Summary"
+const val ORDER_SUMMARY_TITLE = "Order Summary"
 
-const val DELIVERY_ADDRESS_TITLE="Delivery Address"
+const val DELIVERY_ADDRESS_TITLE = "Delivery Address"
 
-const val PAYMENT_METHOD_TITLE="Payment Method"
+const val PAYMENT_METHOD_TITLE = "Payment Method"
 
-const val ORDER_TITLE_TEXT="Order Total"
+const val ORDER_TITLE_TEXT = "Order Total"
 
-const val TOTAL_TITLE_TEXT="Total"
+const val TOTAL_TITLE_TEXT = "Total"
+
+const val RETRY_TEXT = "Retry";
+
+const val OK_TEXT = "OK"
+
+const val CONFIRM_TEXT = "Confirm"
+
+const val LOADING_TEXT = "Loading..."
+const val ADD_NEW_INFORMATION = "Add new information"
+
+const val CHECK_OUT_INFORMATION_TEXT = "Checkout Information"
+
+const val CHECK_OUT_INFORMATION_DESCRIPTION_TEXT = "Select your delivery and payment details"
+
+
+
 
 
 
@@ -133,8 +149,35 @@ const val NAME_ON_CARD_VALID_FORMAT_TEXT = "Card name is invalid.";
 
 const val ENTER_ADDRESS_TEXT = "Please enter address.";
 
+const val LOGIN_ERROR_TITLE = "Login Fail";
+
+const val NEW_INFORMATION_CREATE_FAIL_TITLE = "Information Create Fail";
+
+const val SUBMIT_ORDER_FAIL_TITLE = "Submit Order Fail";
+
+const val ORDER_CONFIRMED_TEXT="Order Confirmed"
+
+const val ORDER_CONFIRMED_DESC="Your order is confirmed!"
+
+const val ORDER_CONFIRMED_SUB_DESC="Your order will be delivered in 30–45 minutes.\nYou can track your order in the Orders tab.";
+
+const val DELIVERY_ADDRESS_AND_PAYMENT_METHOD_ERROR_TITLE =
+    "Fail to Fetch Delivery Address and Payment Method";
+
+const val SIGNUP_ERROR_TITLE = "Signup Fail";
+
+const val CHECK_EMAIL_ERROR_TITLE = "Email not Register";
+
+const val RESET_PASSWORD_ERROR_TITLE = "Reset Password Fail";
+
+const val RESTAURANT_NOT_FOUNT_TEXT = "Restaurant not found"
+
+const val PAYMENT_METHOD_NO_SAVE_TEXT = "No saved payment methods.";
+
+const val DELIVERY_ADDRESS_NO_SAVE_TEXT = "No saved delivery addresses.";
+
 
 //Route
 const val HOME_ROUTE = "Home";
-const val ORDER_ROUTE = "Order";
+const val ORDER_HISTORY_ROUTE = "Order History";
 const val PROFILE_ROUTE = "Profile";
