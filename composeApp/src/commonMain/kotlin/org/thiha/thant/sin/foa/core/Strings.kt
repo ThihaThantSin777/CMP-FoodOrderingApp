@@ -8,7 +8,11 @@ const val PASSWORD_HINT_TEXT = "Password";
 const val CONFIRM_PASSWORD_HINT_TEXT = "Confirm Password";
 const val FORGET_PASSWORD_TEXT = "Forget Password?";
 const val LOGIN_TEXT = "Login";
+
+const val LOGIN_SUCCESS_TEXT = "Login successful";
 const val DONT_HAVE_ACCOUNT_TEXT = "Don't have an account";
+
+const val ACCOUNT_CREATE_SUCCESSFULLY="Account created successfully"
 const val SIGNUP_TEXT = "Sign Up";
 
 const val CREATE_YOUR_ACCOUNT_TITLE_TEXT = "Create your account"
@@ -108,6 +112,10 @@ const val CHECK_OUT_INFORMATION_DESCRIPTION_TEXT = "Select your delivery and pay
 const val CART_EMPTY_TITLE_TEXT = "Your cart is empty"
 
 const val CART_EMPTY_DESC_TEXT = "Add some delicious food to get started."
+
+const val ORDER_HISTORY_EMPTY_TITLE_TEXT = "No orders yet"
+
+const val ORDER_HISTORY_DESC_TEXT ="You haven't placed any orders. Once you do, they'll show up here."
 
 const val SUBMIT_ORDER_SUCCESS_TITLE = "Thank you for your order."
 

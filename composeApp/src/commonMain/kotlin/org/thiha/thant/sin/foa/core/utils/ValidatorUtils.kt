@@ -60,7 +60,6 @@ object ValidatorUtils {
         val raw = cardNumber.replace(" ", "").replace("-", "")
         if (raw.isBlank()) return ENTER_CARD_NUMBER_TEXT
         if (!raw.matches(Regex("^\\d{12,19}$"))) return CARD_NUMBER_VALID_FORMAT_TEXT
-        if (!luhnCheck(raw)) return CARD_NUMBER_INVALID_TEXT
         return ""
     }
 
@@ -91,18 +90,4 @@ object ValidatorUtils {
         return ""
     }
 
-    private fun luhnCheck(number: String): Boolean {
-        var sum = 0
-        var alt = false
-        for (i in number.length - 1 downTo 0) {
-            var n = number[i] - '0'
-            if (alt) {
-                n *= 2
-                if (n > 9) n -= 9
-            }
-            sum += n
-            alt = !alt
-        }
-        return sum % 10 == 0
-    }
 }

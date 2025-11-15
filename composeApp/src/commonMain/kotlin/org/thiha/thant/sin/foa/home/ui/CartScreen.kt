@@ -89,7 +89,6 @@ import org.thiha.thant.sin.foa.home.data.vos.PaymentMethodVO
 import org.thiha.thant.sin.foa.home.state.CartState
 import org.thiha.thant.sin.foa.home.viewmodel.CartViewModel
 
-
 @Composable
 fun CartRoute(
     viewModel: CartViewModel,
@@ -120,7 +119,6 @@ fun CartRoute(
             viewModel.onTapPlaceHolder()
         },
         onIncreaseQuantity = { item ->
-
             val updated = item.copy(quantity = item.quantity + 1)
             viewModel.onUpdateFoodItem(updated)
         },
@@ -137,7 +135,7 @@ fun CartRoute(
         },
         onTapSelectDeliveryAddressAndPaymentMethod = { paymentMethod, deliveryAddress ->
             showPaymentMethodAndDeliveryAddressDialog = false
-            viewModel.onTapAddPaymentMethodAndDeliveryAddress(paymentMethod, deliveryAddress);
+            viewModel.onTapAddPaymentMethodAndDeliveryAddress(paymentMethod, deliveryAddress)
         },
         onTapNewCreateInformation = {
             showPaymentMethodAndDeliveryAddressDialog = false
@@ -148,7 +146,6 @@ fun CartRoute(
         }
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -192,11 +189,12 @@ fun CartScreen(
             if (cartState.uiState == UiState.LOADING) {
                 AppLoadingDialog()
             }
+
             if (cartItems.isEmpty()) {
                 EmptyCartView()
             } else {
                 Column(Modifier.fillMaxWidth()) {
-                    cartState.foodItemVO.forEach { item ->
+                    cartItems.forEach { item ->
                         CartRow(
                             item = item,
                             onMinus = { onDecreaseQuantity(item) },
@@ -282,12 +280,9 @@ fun CartScreen(
                     }
                 }
             }
-
-
         }
     }
 }
-
 
 @Composable
 private fun CartRow(
@@ -359,7 +354,6 @@ private fun StepperButton(
         )
     }
 }
-
 
 @Composable
 fun PaymentAndAddressDialog(
@@ -473,7 +467,6 @@ fun PaymentAndAddressDialog(
                         onConfirm(pm, address)
                         onTapPaymentMethodAndDeliveryAddressContinue()
                     } else {
-
                         onDismissRequest()
                     }
                 },
@@ -511,8 +504,6 @@ fun PaymentAndAddressDialog(
         }
     )
 }
-
-
 
 @Composable
 private fun SectionHeader(icon: ImageVector, title: String) {
@@ -723,4 +714,3 @@ private fun EmptyCartView() {
         Spacer(Modifier.height(MARGIN_LARGE))
     }
 }
-

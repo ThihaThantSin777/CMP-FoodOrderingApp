@@ -45,6 +45,8 @@ object HomeRepository {
     suspend fun addDeliveryAddressAndPaymentMethod(paymentAndAddressRequestVO: PaymentAndAddressRequestVO): PaymentAndAddressVO {
         return withContext(Dispatchers.IO) {
             val response = apiService.addDeliveryAddressAndPaymentMethod(paymentAndAddressRequestVO)
+            addPaymentMethodInDatabase(paymentMethod = response.paymentMethod!!)
+            addDeliveryAddressInDatabase(deliveryAddressVO = response.deliveryAddress!!)
             return@withContext response;
         }
     }

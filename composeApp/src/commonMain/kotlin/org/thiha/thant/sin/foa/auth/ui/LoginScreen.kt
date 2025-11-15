@@ -13,6 +13,9 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -28,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import org.thiha.thant.sin.foa.auth.state.AuthState
 import org.thiha.thant.sin.foa.auth.viewmodel.LoginViewModel
 import org.thiha.thant.sin.foa.components.AppDialog
@@ -38,6 +42,7 @@ import org.thiha.thant.sin.foa.core.DONT_HAVE_ACCOUNT_TEXT
 import org.thiha.thant.sin.foa.core.EMAIL_HINT_TEXT
 import org.thiha.thant.sin.foa.core.FORGET_PASSWORD_TEXT
 import org.thiha.thant.sin.foa.core.LOGIN_ERROR_TITLE
+import org.thiha.thant.sin.foa.core.LOGIN_SUCCESS_TEXT
 import org.thiha.thant.sin.foa.core.LOGIN_TEXT
 import org.thiha.thant.sin.foa.core.MARGIN_40
 import org.thiha.thant.sin.foa.core.MARGIN_CARD_MEDIUM_2
@@ -46,6 +51,7 @@ import org.thiha.thant.sin.foa.core.MARGIN_MEDIUM
 import org.thiha.thant.sin.foa.core.MARGIN_MEDIUM_3
 import org.thiha.thant.sin.foa.core.OK_TEXT
 import org.thiha.thant.sin.foa.core.PASSWORD_HINT_TEXT
+import org.thiha.thant.sin.foa.core.PRIMARY_COLOR
 import org.thiha.thant.sin.foa.core.SECONDARY_COLOR
 import org.thiha.thant.sin.foa.core.SIGNUP_TEXT
 import org.thiha.thant.sin.foa.core.TEXT_LARGE_3x
@@ -53,6 +59,7 @@ import org.thiha.thant.sin.foa.core.TEXT_REGULAR_2X
 import org.thiha.thant.sin.foa.core.WELCOME_BACK_TITLE_TEXT
 import org.thiha.thant.sin.foa.core.utils.ValidatorUtils
 import org.thiha.thant.sin.foa.core.utils.enums.UiState
+
 
 @Composable
 fun LoginRoute(
@@ -63,32 +70,44 @@ fun LoginRoute(
 ) {
     val authState by viewModel.state.collectAsStateWithLifecycle()
     var showErrorDialog by remember { mutableStateOf(false) }
-
-
-    LaunchedEffect(authState.uiState) {
-        if (authState.uiState == UiState.SUCCESS) {
-            onNavigateMainScreen();
-        }
-
-        if (authState.uiState == UiState.FAIL) {
-            showErrorDialog = true
-        }
+    val snackBarHostState = remember {
+        SnackbarHostState()
     }
 
+    LaunchedEffect(authState.uiState) {
+        when (authState.uiState) {
+            UiState.SUCCESS -> {
+                launch {
+                    snackBarHostState.showSnackbar(LOGIN_SUCCESS_TEXT)
+                }
+                onNavigateMainScreen()
+            }
+
+            UiState.FAIL -> {
+                if (authState.errorMessage.isNotBlank()) {
+                    showErrorDialog = true
+                }
+            }
+
+            else -> Unit
+        }
+    }
 
     LoginScreen(
         onTapForgetPassword = onTapForgetPassword,
         onTapSignUp = onTapSignUp,
         onTapLogin = { email, password ->
-            viewModel.onTapLogin(email, password);
+            viewModel.onTapLogin(email, password)
         },
         onTapOKButtonDialog = {
-            showErrorDialog = false;
+            showErrorDialog = false
         },
         authState = authState,
-        showErrorDialog = showErrorDialog
+        showErrorDialog = showErrorDialog,
+        snackBarHostState = snackBarHostState
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,8 +118,8 @@ fun LoginScreen(
     onTapLogin: (email: String, password: String) -> Unit,
     authState: AuthState,
     showErrorDialog: Boolean,
-
-    ) {
+    snackBarHostState: SnackbarHostState,
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var emailErrorText by remember { mutableStateOf<String?>(null) }
@@ -110,7 +129,8 @@ fun LoginScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {}, colors = TopAppBarDefaults.topAppBarColors(
+                title = {},
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,
                 ),
                 actions = {
@@ -121,6 +141,16 @@ fun LoginScreen(
                     )
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = PRIMARY_COLOR,
+                    contentColor = Color.White,
+                    actionColor = Color.White
+                )
+            }
         }
     ) { paddingValues ->
         if (authState.uiState == UiState.LOADING) {
@@ -129,13 +159,18 @@ fun LoginScreen(
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize().background(Color.White)
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues = paddingValues)
         ) {
-            Text(WELCOME_BACK_TITLE_TEXT, fontWeight = FontWeight.W700, fontSize = TEXT_LARGE_3x)
+            Text(
+                WELCOME_BACK_TITLE_TEXT,
+                fontWeight = FontWeight.W700,
+                fontSize = TEXT_LARGE_3x
+            )
 
             Spacer(modifier = Modifier.height(MARGIN_LARGE))
-
 
             AppOutlinedTextField(
                 value = email,
@@ -147,7 +182,9 @@ fun LoginScreen(
                     .padding(horizontal = MARGIN_MEDIUM_3),
                 errorText = emailErrorText
             )
+
             Spacer(modifier = Modifier.height(MARGIN_CARD_MEDIUM_2))
+
             AppOutlinedTextField(
                 value = password,
                 isError = passwordErrorText?.isNotEmpty() ?: false,
@@ -159,27 +196,31 @@ fun LoginScreen(
                     .padding(horizontal = MARGIN_MEDIUM_3),
                 errorText = passwordErrorText
             )
+
             Spacer(modifier = Modifier.height(MARGIN_CARD_MEDIUM_2))
+
             Text(
                 FORGET_PASSWORD_TEXT,
                 color = SECONDARY_COLOR,
-                modifier = Modifier.align(Alignment.End).padding(horizontal = MARGIN_MEDIUM_3)
-                    .clickable {
-                        onTapForgetPassword()
-                    }
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(horizontal = MARGIN_MEDIUM_3)
+                    .clickable { onTapForgetPassword() }
             )
+
             Spacer(modifier = Modifier.height(MARGIN_CARD_MEDIUM_2))
+
             AppPrimaryButton(
                 enabled = authState.uiState != UiState.LOADING,
                 text = LOGIN_TEXT,
                 onClick = {
-                    emailErrorText = ValidatorUtils.checkEmailValidation(email);
-                    passwordErrorText = ValidatorUtils.checkPasswordValidation(password);
+                    emailErrorText = ValidatorUtils.checkEmailValidation(email)
+                    passwordErrorText = ValidatorUtils.checkPasswordValidation(password)
 
-                    if ((emailErrorText?.isEmpty() ?: false) && (passwordErrorText?.isEmpty()
-                            ?: false)
+                    if ((emailErrorText?.isEmpty() ?: false) &&
+                        (passwordErrorText?.isEmpty() ?: false)
                     ) {
-                        focusManager.clearFocus();
+                        focusManager.clearFocus()
                         onTapLogin(email, password)
                     }
                 },
@@ -197,21 +238,16 @@ fun LoginScreen(
                 color = SECONDARY_COLOR,
                 fontSize = TEXT_REGULAR_2X,
                 fontWeight = FontWeight.W700,
-                modifier = Modifier.clickable {
-                    onTapSignUp()
-                }
+                modifier = Modifier.clickable { onTapSignUp() }
             )
+
             if (showErrorDialog) {
                 AppDialog(
                     title = LOGIN_ERROR_TITLE,
                     message = authState.errorMessage,
                     confirmText = OK_TEXT,
-                    onConfirm = {
-                        onTapOKButtonDialog()
-                    },
-                    onDismissRequest = {
-                        onTapOKButtonDialog()
-                    },
+                    onConfirm = { onTapOKButtonDialog() },
+                    onDismissRequest = { onTapOKButtonDialog() },
                 )
             }
         }
