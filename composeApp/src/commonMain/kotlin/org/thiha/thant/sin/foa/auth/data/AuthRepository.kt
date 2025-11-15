@@ -3,7 +3,6 @@ package org.thiha.thant.sin.foa.auth.data
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
-import org.thiha.thant.sin.foa.State
 import org.thiha.thant.sin.foa.auth.data.vos.LoginRequestVO
 import org.thiha.thant.sin.foa.auth.data.vos.AuthVO
 import org.thiha.thant.sin.foa.auth.data.vos.ForgetPasswordRequestVO
@@ -19,8 +18,7 @@ object AuthRepository {
     suspend fun login(loginRequestVO: LoginRequestVO): AuthVO {
         return withContext(Dispatchers.IO) {
             val response = apiService.login(loginRequestVO);
-            ///TODO Need to Delect After implement Persistent
-            State.token = response.accessToken
+            appDatabase.userDao().insertUser(response)
             return@withContext response;
         }
     }
@@ -28,8 +26,7 @@ object AuthRepository {
     suspend fun register(registerRequestVO: RegisterRequestVO): AuthVO {
         return withContext(Dispatchers.IO) {
             val response = apiService.register(registerRequestVO);
-            ///TODO Need to Delect After implement Persistent
-            State.token = response.accessToken
+            appDatabase.userDao().insertUser(response)
             return@withContext response;
         }
     }
@@ -50,4 +47,27 @@ object AuthRepository {
             return@withContext response;
         }
     }
+
+    suspend fun getLoggedInUser(): AuthVO? =
+        withContext(Dispatchers.IO) {
+            appDatabase.userDao().getUser()
+        }
+
+    suspend fun isUserLoggedIn(): Boolean =
+        withContext(Dispatchers.IO) {
+            appDatabase.userDao().getUser() != null
+        }
+
+    suspend fun getLoggedInUserToken(): String =
+        withContext(Dispatchers.IO) {
+            appDatabase.userDao().getUser()?.accessToken ?: ""
+        }
+
+    suspend fun clearInformationFromDatabase() =
+        withContext(Dispatchers.IO) {
+            appDatabase.userDao().clearAll()
+            appDatabase.deliAddressDao().clearAll()
+            appDatabase.paymentMethodDao().clearAll()
+            appDatabase.foodItemDao().clearAll()
+        }
 }

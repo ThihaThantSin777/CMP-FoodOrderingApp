@@ -1,4 +1,4 @@
-package org.thiha.thant.sin.foa.home.persistent.daos
+package org.thiha.thant.sin.foa.home.persistence.daos
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -20,5 +20,8 @@ interface FoodItemDao {
 
     @Update
     suspend fun updateFoodItem(item: FoodItemVO)
+
+    @Query("DELETE FROM food_item WHERE id = :foodId")
+    suspend fun deleteFoodItem(foodId: Long)
 
 }

@@ -2,11 +2,15 @@ package org.thiha.thant.sin.foa
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,6 +19,7 @@ import androidx.navigation.toRoute
 import androidx.room.RoomDatabase
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.thiha.thant.sin.foa.app.viewmodel.AppViewModel
 import org.thiha.thant.sin.foa.auth.ui.ForgetPasswordRoute
 import org.thiha.thant.sin.foa.auth.ui.LoginRoute
 import org.thiha.thant.sin.foa.auth.ui.ResetPasswordRoute
@@ -23,8 +28,13 @@ import org.thiha.thant.sin.foa.auth.viewmodel.ForgetPasswordViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.LoginViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.ResetPasswordViewModel
 import org.thiha.thant.sin.foa.auth.viewmodel.SignupViewModel
+import org.thiha.thant.sin.foa.components.AppDialog
+import org.thiha.thant.sin.foa.components.AppLoadingDialog
+import org.thiha.thant.sin.foa.core.APP_INITIAL_ERROR_TITLE
+import org.thiha.thant.sin.foa.core.OK_TEXT
 import org.thiha.thant.sin.foa.core.persistence.AppDatabase
 import org.thiha.thant.sin.foa.core.persistence.AppDatabaseProvider
+import org.thiha.thant.sin.foa.core.utils.enums.UiState
 import org.thiha.thant.sin.foa.home.ui.CartRoute
 import org.thiha.thant.sin.foa.home.ui.CheckoutRoute
 import org.thiha.thant.sin.foa.home.ui.MainRoute
@@ -38,225 +48,263 @@ import org.thiha.thant.sin.foa.home.viewmodel.RestaurantDetailsViewModel
 import org.thiha.thant.sin.foa.home.viewmodel.ReviewOrderViewModel
 import org.thiha.thant.sin.foa.order.viewmodel.OrderHistoryViewModel
 import org.thiha.thant.sin.foa.profile.ui.AboutScreen
+import org.thiha.thant.sin.foa.profile.viewmodel.ProfileViewModel
 
 @Composable
 @Preview
 fun App(databaseBuilder: RoomDatabase.Builder<AppDatabase>) {
     AppDatabaseProvider.initializeDatabase(databaseBuilder)
+
+
     val navigationController = rememberNavController()
     val focusManager = LocalFocusManager.current;
     val interactionSource = remember { MutableInteractionSource() }
+    val appViewModel = viewModel {
+        AppViewModel()
+    }
+
+    val appState by appViewModel.state.collectAsStateWithLifecycle()
 
 
     MaterialTheme {
-        NavHost(
-            navigationController,
-            startDestination = NavRoutes.LoginScreen,
-            modifier = Modifier.clickable(
-                interactionSource = interactionSource, indication = null
-            ) {
-                focusManager.clearFocus()
-            }) {
-            composable<NavRoutes.LoginScreen>() {
-                val loginViewModel = viewModel {
-                    LoginViewModel()
-                }
-                LoginRoute(
-                    viewModel = loginViewModel,
-                    onTapForgetPassword = {
-                        navigationController.navigate(NavRoutes.ForgetPasswordScreen)
-
-                    }, onTapSignUp = {
-                        navigationController.navigate(NavRoutes.SignupScreen)
-                    }, onNavigateMainScreen = {
-                        navigationController.navigate(NavRoutes.MainScreen) {
-                            popUpTo(navigationController.graph.startDestinationId) {
-                                inclusive = true
-                            }
-                        }
-                    })
-            }
-            composable<NavRoutes.SignupScreen>() {
-                val signUpViewModel = viewModel {
-                    SignupViewModel()
-                }
-                SignupRoute(
-                    viewModel = signUpViewModel,
-                    onTapBack = {
-                        navigationController.navigateUp()
-                    }, onNavigateMainScreen = {
-                        navigationController.navigate(NavRoutes.MainScreen) {
-                            popUpTo(navigationController.graph.startDestinationId) {
-                                inclusive = true
-                            }
-                        }
-                    })
-            }
-
-            composable<NavRoutes.ForgetPasswordScreen>() {
-                val forgetPasswordViewModel = viewModel {
-                    ForgetPasswordViewModel()
-                }
-                ForgetPasswordRoute(
-                    viewModel = forgetPasswordViewModel,
-                    onTapBack = {
-                        navigationController.navigateUp()
-                    }, onTapContinue = { email, resetPasswordToken ->
-                        println("Email: $email")
-                        println("ResetPassword Token: $resetPasswordToken")
-                        navigationController.navigate(
-                            NavRoutes.ResetPasswordScreen(
-                                email = email,
-                                resetPasswordToken = resetPasswordToken,
-                            )
-                        )
-                    })
-            }
-            composable<NavRoutes.ResetPasswordScreen>() { backStackEntry ->
-                val args = backStackEntry.toRoute<NavRoutes.ResetPasswordScreen>()
-                val email = args.email;
-                val resetPasswordToken = args.resetPasswordToken;
-                val resetPasswordViewModel = viewModel {
-                    ResetPasswordViewModel()
-                }
-                ResetPasswordRoute(
-                    viewModel = resetPasswordViewModel,
-                    onTapBack = {
-                        navigationController.navigateUp()
-                    },
-                    onTapResetPassword = {
-                        navigationController.navigate(NavRoutes.LoginScreen)
-                    },
-                    email = email,
-                    resetPasswordToken = resetPasswordToken,
-                )
-            }
-
-            composable<NavRoutes.MainScreen>() {
-
-                val homeViewModel = viewModel {
-                    HomeViewModel()
-                }
-
-                val orderHistoryViewModel = viewModel {
-                    OrderHistoryViewModel()
-                }
-                MainRoute(
-                    onTapAboutScreen = {
-                        navigationController.navigate(NavRoutes.AboutScreen)
-                    },
-                    onTapLogout = {
-                        navigationController.navigate(NavRoutes.LoginScreen) {
-                            popUpTo(navigationController.graph.startDestinationId) {
-                                inclusive = true
-                            }
-                        }
-                    },
-                    onTapCart = {
-                        navigationController.navigate(NavRoutes.CartScreen)
-                    },
-                    onTapRestaurant = {
-                        navigationController.navigate(NavRoutes.RestaurantDetailsScreen(1))
-                    },
-                    homeViewModel = homeViewModel,
-                    orderHistoryViewModel = orderHistoryViewModel,
-                )
-            }
-
-
-            composable<NavRoutes.RestaurantDetailsScreen>() { backStackEntry ->
-                val args = backStackEntry.toRoute<NavRoutes.RestaurantDetailsScreen>()
-                val restaurantID = args.restaurantID;
-                val restaurantDetailsViewModel = viewModel {
-                    RestaurantDetailsViewModel(restaurantID)
-                }
-
-                RestaurantDetailsRoute(
-                    viewModel = restaurantDetailsViewModel,
-                    onTapViewMyCart = {
-                        navigationController.navigate(NavRoutes.CartScreen)
-
-                    },
-                    onTapBack = {
-                        navigationController.navigateUp()
-
-                    }
-                )
-            }
-
-            composable<NavRoutes.CartScreen>() {
-                val cartViewModel = viewModel {
-                    CartViewModel()
-                }
-                CartRoute(
-                    viewModel = cartViewModel,
-                    onBack = {
-                        navigationController.navigateUp()
-                    },
-                    onPlaceOrder = {
-                        navigationController.navigate(NavRoutes.ReviewOrderScreen)
-                    },
-                    onTapNewCreateInformation = {
-                        navigationController.navigate(NavRoutes.CheckOutScreen)
-                    }
-                )
-            }
-
-
-            composable<NavRoutes.CheckOutScreen>() {
-                val checkOutViewModel = viewModel {
-                    CheckOutViewModel()
-                }
-                CheckoutRoute(
-                    viewModel = checkOutViewModel,
-                    onPlaceOrder = {
-                        navigationController.navigate(NavRoutes.ReviewOrderScreen)
-                    },
-                    onBack = {
-                        navigationController.navigateUp()
-                    },
-                )
-            }
-
-            composable<NavRoutes.ReviewOrderScreen>() {
-                val reviewOrderViewModel = viewModel {
-                    ReviewOrderViewModel()
-                }
-                ReviewOrderRoute(
-                    viewModel = reviewOrderViewModel,
-                    onBack = {
-                        navigationController.navigateUp()
-                    },
-                    onConfirmOrder = {
-                        navigationController.navigate(NavRoutes.OrderConfirmScreen)
-                    }
-                )
-            }
-
-            composable<NavRoutes.OrderConfirmScreen>() {
-                OrderConfirmScreen(
-                    onBack = {
-                        navigationController.navigateUp()
-                    },
-                    onConfirm = {
-                        navigationController.navigate(NavRoutes.MainScreen) {
-                            popUpTo(navigationController.graph.startDestinationId) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                )
-            }
-
-
-            composable<NavRoutes.AboutScreen>() {
-                AboutScreen(
-                    onBack = {
-                        navigationController.navigateUp()
-                    }
-                )
+        if (appState.uiState == UiState.LOADING) {
+            Scaffold(modifier = Modifier.fillMaxSize()) {
+                AppLoadingDialog()
             }
         }
+        if (appState.uiState == UiState.FAIL) {
+            Scaffold(modifier = Modifier.fillMaxSize()) {
+                AppDialog(
+                    title = APP_INITIAL_ERROR_TITLE,
+                    message = appState.errorMessage,
+                    confirmText = OK_TEXT,
+                    onConfirm = {
+                        appViewModel.onTapUIStateNone()
+                    },
+                    onDismissRequest = {
+                        appViewModel.onTapUIStateNone()
+                    },
+                )
+            }
+
+        }
+        if (appState.uiState == UiState.SUCCESS || appState.uiState == UiState.NONE) {
+            NavHost(
+                navigationController,
+                startDestination = if (appState.isLoggedIn) NavRoutes.MainScreen else NavRoutes.LoginScreen,
+                modifier = Modifier.clickable(
+                    interactionSource = interactionSource, indication = null
+                ) {
+                    focusManager.clearFocus()
+                }) {
+                composable<NavRoutes.LoginScreen>() {
+                    val loginViewModel = viewModel {
+                        LoginViewModel()
+                    }
+                    LoginRoute(
+                        viewModel = loginViewModel,
+                        onTapForgetPassword = {
+                            navigationController.navigate(NavRoutes.ForgetPasswordScreen)
+
+                        }, onTapSignUp = {
+                            navigationController.navigate(NavRoutes.SignupScreen)
+                        }, onNavigateMainScreen = {
+                            navigationController.navigate(NavRoutes.MainScreen) {
+                                popUpTo(navigationController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                            }
+                        })
+                }
+                composable<NavRoutes.SignupScreen>() {
+                    val signUpViewModel = viewModel {
+                        SignupViewModel()
+                    }
+                    SignupRoute(
+                        viewModel = signUpViewModel,
+                        onTapBack = {
+                            navigationController.navigateUp()
+                        }, onNavigateMainScreen = {
+                            navigationController.navigate(NavRoutes.MainScreen) {
+                                popUpTo(navigationController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                            }
+                        })
+                }
+
+                composable<NavRoutes.ForgetPasswordScreen>() {
+                    val forgetPasswordViewModel = viewModel {
+                        ForgetPasswordViewModel()
+                    }
+                    ForgetPasswordRoute(
+                        viewModel = forgetPasswordViewModel,
+                        onTapBack = {
+                            navigationController.navigateUp()
+                        }, onTapContinue = { email, resetPasswordToken ->
+                            println("Email: $email")
+                            println("ResetPassword Token: $resetPasswordToken")
+                            navigationController.navigate(
+                                NavRoutes.ResetPasswordScreen(
+                                    email = email,
+                                    resetPasswordToken = resetPasswordToken,
+                                )
+                            )
+                        })
+                }
+                composable<NavRoutes.ResetPasswordScreen>() { backStackEntry ->
+                    val args = backStackEntry.toRoute<NavRoutes.ResetPasswordScreen>()
+                    val email = args.email;
+                    val resetPasswordToken = args.resetPasswordToken;
+                    val resetPasswordViewModel = viewModel {
+                        ResetPasswordViewModel()
+                    }
+                    ResetPasswordRoute(
+                        viewModel = resetPasswordViewModel,
+                        onTapBack = {
+                            navigationController.navigateUp()
+                        },
+                        onTapResetPassword = {
+                            navigationController.navigate(NavRoutes.LoginScreen)
+                        },
+                        email = email,
+                        resetPasswordToken = resetPasswordToken,
+                    )
+                }
+
+                composable<NavRoutes.MainScreen>() {
+
+                    val homeViewModel = viewModel {
+                        HomeViewModel()
+                    }
+
+                    val orderHistoryViewModel = viewModel {
+                        OrderHistoryViewModel()
+                    }
+
+                    val profileViewModel = viewModel {
+                        ProfileViewModel()
+                    }
+                    MainRoute(
+                        onTapAboutScreen = {
+                            navigationController.navigate(NavRoutes.AboutScreen)
+                        },
+                        onTapLogout = {
+                            navigationController.navigate(NavRoutes.LoginScreen) {
+                                popUpTo(navigationController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                            }
+                        },
+                        onTapCart = {
+                            navigationController.navigate(NavRoutes.CartScreen)
+                        },
+                        onTapRestaurant = {
+                            navigationController.navigate(NavRoutes.RestaurantDetailsScreen(1))
+                        },
+                        homeViewModel = homeViewModel,
+                        orderHistoryViewModel = orderHistoryViewModel,
+                        profileViewModel = profileViewModel,
+                    )
+                }
+
+
+                composable<NavRoutes.RestaurantDetailsScreen>() { backStackEntry ->
+                    val args = backStackEntry.toRoute<NavRoutes.RestaurantDetailsScreen>()
+                    val restaurantID = args.restaurantID;
+                    val restaurantDetailsViewModel = viewModel {
+                        RestaurantDetailsViewModel(restaurantID)
+                    }
+
+                    RestaurantDetailsRoute(
+                        viewModel = restaurantDetailsViewModel,
+                        onTapViewMyCart = {
+                            navigationController.navigate(NavRoutes.CartScreen)
+
+                        },
+                        onTapBack = {
+                            navigationController.navigateUp()
+
+                        }
+                    )
+                }
+
+                composable<NavRoutes.CartScreen>() {
+                    val cartViewModel = viewModel {
+                        CartViewModel()
+                    }
+                    CartRoute(
+                        viewModel = cartViewModel,
+                        onBack = {
+                            navigationController.navigateUp()
+                        },
+                        onPlaceOrder = {
+                            navigationController.navigate(NavRoutes.ReviewOrderScreen)
+                        },
+                        onTapNewCreateInformation = {
+                            navigationController.navigate(NavRoutes.CheckOutScreen)
+                        }
+                    )
+                }
+
+
+                composable<NavRoutes.CheckOutScreen>() {
+                    val checkOutViewModel = viewModel {
+                        CheckOutViewModel()
+                    }
+                    CheckoutRoute(
+                        viewModel = checkOutViewModel,
+                        onPlaceOrder = {
+                            navigationController.navigate(NavRoutes.ReviewOrderScreen)
+                        },
+                        onBack = {
+                            navigationController.navigateUp()
+                        },
+                    )
+                }
+
+                composable<NavRoutes.ReviewOrderScreen>() {
+                    val reviewOrderViewModel = viewModel {
+                        ReviewOrderViewModel()
+                    }
+                    ReviewOrderRoute(
+                        viewModel = reviewOrderViewModel,
+                        onBack = {
+                            navigationController.navigateUp()
+                        },
+                        onConfirmOrder = {
+                            navigationController.navigate(NavRoutes.OrderConfirmScreen)
+                        }
+                    )
+                }
+
+                composable<NavRoutes.OrderConfirmScreen>() {
+                    OrderConfirmScreen(
+                        onBack = {
+                            navigationController.navigateUp()
+                        },
+                        onConfirm = {
+                            navigationController.navigate(NavRoutes.MainScreen) {
+                                popUpTo(navigationController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    )
+                }
+
+
+                composable<NavRoutes.AboutScreen>() {
+                    AboutScreen(
+                        onBack = {
+                            navigationController.navigateUp()
+                        }
+                    )
+                }
+            }
+        }
+
+
     }
 }
 
@@ -300,3 +348,4 @@ sealed class NavRoutes {
     @Serializable
     object AboutScreen
 }
+

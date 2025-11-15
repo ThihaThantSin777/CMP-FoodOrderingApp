@@ -62,6 +62,10 @@ data class FoodItemVO(
     @ColumnInfo("price")
     val price: Double,
 
+    @SerialName("quantity")
+    @ColumnInfo("quantity")
+    val quantity: Int = 1,
+
     @SerialName("created_at")
     @ColumnInfo("created_at")
     val createdAt: String,
@@ -70,3 +74,4 @@ data class FoodItemVO(
     @SerialName("updated_at")
     val updatedAt: String
 )
+

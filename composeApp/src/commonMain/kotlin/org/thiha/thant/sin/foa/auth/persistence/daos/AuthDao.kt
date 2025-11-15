@@ -1,4 +1,4 @@
-package org.thiha.thant.sin.foa.auth.persistent.daos
+package org.thiha.thant.sin.foa.auth.persistence.daos
 
 import androidx.room.Dao
 import androidx.room.Insert

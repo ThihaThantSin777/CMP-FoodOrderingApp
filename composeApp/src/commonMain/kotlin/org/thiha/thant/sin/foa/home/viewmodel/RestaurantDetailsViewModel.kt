@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.thiha.thant.sin.foa.core.utils.enums.UiState
 import org.thiha.thant.sin.foa.home.data.HomeRepository
+import org.thiha.thant.sin.foa.home.data.vos.FoodItemVO
 import org.thiha.thant.sin.foa.home.state.RestaurantDetailsState
 
 
@@ -28,6 +29,24 @@ class RestaurantDetailsViewModel(val restaurantID: Long) : ViewModel() {
                 _state.update {
                     it.copy(restaurantDetails = restaurant, uiState = UiState.SUCCESS)
                 }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(uiState = UiState.FAIL, errorMessage = e.message ?: "")
+                }
+            }
+        }
+    }
+
+    fun onSaveFoodItem(foodItemVO: FoodItemVO, isUpdate: Boolean) {
+        viewModelScope.launch {
+
+            try {
+                if (isUpdate) {
+                    homeRepository.updateFoodItemInDatabase(foodItemVO)
+                } else {
+                    homeRepository.addFoodItemInDatabase(foodItemVO)
+                }
+
             } catch (e: Exception) {
                 _state.update {
                     it.copy(uiState = UiState.FAIL, errorMessage = e.message ?: "")

@@ -1,4 +1,4 @@
-package org.thiha.thant.sin.foa.home.persistent.daos
+package org.thiha.thant.sin.foa.home.persistence.daos
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -21,4 +21,7 @@ interface DeliveryAddressDao {
 
     @Query("DELETE FROM delivery_address")
     suspend fun clearAll()
+
+    @Query("DELETE FROM payment_method WHERE id = :id")
+    suspend fun deleteDeliveryAddressByID(id: Long)
 }
