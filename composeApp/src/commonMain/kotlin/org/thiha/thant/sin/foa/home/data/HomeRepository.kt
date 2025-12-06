@@ -2,6 +2,7 @@ package org.thiha.thant.sin.foa.home.data
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.thiha.thant.sin.foa.core.persistence.AppDatabase
 import org.thiha.thant.sin.foa.core.persistence.AppDatabaseProvider
@@ -79,11 +80,8 @@ object HomeRepository {
         }
     }
 
-    suspend fun getFoodItemInDatabase(): List<FoodItemVO> {
-        return withContext(Dispatchers.IO) {
-            val response = appDatabase.foodItemDao().getAllFoodItems();
-            return@withContext response;
-        }
+    fun getFoodItemInDatabase(): Flow<List<FoodItemVO>> {
+        return appDatabase.foodItemDao().getAllFoodItems()
     }
 
 
