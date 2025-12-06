@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import org.thiha.thant.sin.foa.core.utils.enums.UiState
 import org.thiha.thant.sin.foa.home.data.HomeRepository
@@ -20,32 +21,39 @@ class CartViewModel : ViewModel() {
     val state = _state.asStateFlow()
 
     init {
+        observeFoodItems()
+    }
+
+    private fun observeFoodItems() {
         viewModelScope.launch {
-            _state.update { it.copy(uiState = UiState.LOADING) }
-            try {
-                val foodItemListFromDatabase = homeRepository.getFoodItemInDatabase()
-                _state.update {
-                    it.copy(
-                        foodItemVO = foodItemListFromDatabase,
-                        uiState = UiState.SUCCESS
-                    )
+            homeRepository.getFoodItemInDatabase()
+                .catch { e ->
+                    _state.update {
+                        it.copy(
+                            uiState = UiState.FAIL,
+                            errorMessage = e.message ?: ""
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        uiState = UiState.FAIL,
-                        errorMessage = e.message ?: ""
-                    )
+                .collect { foodItemList ->
+                    _state.update {
+                        it.copy(
+                            foodItemVO = foodItemList,
+                            uiState = UiState.SUCCESS
+                        )
+                    }
                 }
-            }
         }
     }
 
-    fun onTapAddPaymentMethodAndDeliveryAddress(paymentMethodVO: PaymentMethodVO,deliveryAddressVO: DeliveryAddressVO) {
+    fun onTapAddPaymentMethodAndDeliveryAddress(
+        paymentMethodVO: PaymentMethodVO,
+        deliveryAddressVO: DeliveryAddressVO
+    ) {
         viewModelScope.launch {
             try {
-                homeRepository.addPaymentMethodInDatabase(paymentMethodVO);
-                homeRepository.addDeliveryAddressInDatabase(deliveryAddressVO);
+                homeRepository.addPaymentMethodInDatabase(paymentMethodVO)
+                homeRepository.addDeliveryAddressInDatabase(deliveryAddressVO)
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
@@ -60,19 +68,10 @@ class CartViewModel : ViewModel() {
     fun onUpdateFoodItem(foodItemVO: FoodItemVO) {
         viewModelScope.launch {
             try {
-
                 if (foodItemVO.quantity == 0) {
-                    homeRepository.deleteFoodItemByIDInDatabase(foodItemVO.id);
+                    homeRepository.deleteFoodItemByIDInDatabase(foodItemVO.id)
                 } else {
                     homeRepository.updateFoodItemInDatabase(foodItemVO)
-                }
-
-                _state.update { current ->
-                    current.copy(
-                        foodItemVO = current.foodItemVO.map { item ->
-                            if (item.id == foodItemVO.id) foodItemVO else item
-                        }
-                    )
                 }
             } catch (e: Exception) {
                 _state.update {
