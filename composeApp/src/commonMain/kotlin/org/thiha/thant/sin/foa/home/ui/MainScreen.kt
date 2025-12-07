@@ -57,6 +57,7 @@ fun MainRoute(
         homeViewModel = homeViewModel,
         orderHistoryViewModel = orderHistoryViewModel,
         profileViewModel = profileViewModel,
+        onTokenExpired = onTokenExpired,
     )
 }
 
